@@ -25,7 +25,7 @@
   </p>
 </div>
 
-
+<!--
 ### Built With
 
 
@@ -33,6 +33,7 @@
 * [![Bootstrap][Bootstrap.com]][Bootstrap-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+-->
 
 <!-- ROADMAP -->
 ## Roadmap
