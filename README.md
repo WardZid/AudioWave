@@ -46,6 +46,8 @@
                 - [ ] Load On Scroll
             - [ ] Search Mechanism
             - [ ] Audio Player Sidebar
+              - [ ] Working Audio Player
+              - [ ] Comments Component
         - [ ] Sign In Page
         - [ ] Register Page 
         - [ ] User Profile Page
