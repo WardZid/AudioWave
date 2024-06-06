@@ -1,47 +1,40 @@
-﻿#GIT IGNORE FILE
+﻿# Ignore Visual Studio temporary files, build results, and
+# common node.js folders.
+.vscode/
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.sqlite
 
-# Ignore build output directories
+# Ignore build results
 bin/
 obj/
 
-# Ignore user-specific files
-*.user
-*.suo
-*.userosscache
-*.sln.docstates
+# Ignore Docker files
+docker-compose.override.yml
+Dockerfile*
 
-# Ignore user-specific files (Mono)
-*.userprefs
+# Ignore logs and temp files
+*.log
+*.tmp
 
-# ASP.NET Scaffolding
-ScaffoldingReadMe.txt
+# Ignore system files
+.DS_Store
+Thumbs.db
 
-# Ignore .NET Core project directories
-project.lock.json
-project.fragment.lock.json
-artifacts/
+# Ignore Node.js modules (if you have any frontend projects using Node.js)
+node_modules/
 
-# Ignore Visual Studio Code files
-.vscode/
+# Ignore coverage and test results
+coverage/
+test-results/
 
-# Ignore JetBrains Rider files
-.idea/
+# Ignore all Draw.io backup files
+*.drawio~ 
 
-# Ignore Rider 2019.2 and earlier workspace
-.idea/workspace.xml
-
-# Ignore JetBrains Rider plugin directories
-.idea/.idea.*
-.idea/.idea_modules
-.ijwb/.project
-.idea/.idea_modules/.ijwb/.project
-.ijwb/
-
-# Ignore ReSharper files
-_ReSharper*/
-*.ReSharper
-*.DotSettings.user
-
-# Ignore other files
-.vs/
-TestResults/
+# Ignore specific files
+24-1-D-44 Braude Capstone Project Book.docx
+24-1-D-44 Braude Capstone Project Presentation.pptx
+README.md
