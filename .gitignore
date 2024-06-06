@@ -1,3 +1,5 @@
+﻿#GIT IGNORE FILE
+
 # Ignore build output directories
 bin/
 obj/
@@ -31,9 +33,9 @@ artifacts/
 # Ignore JetBrains Rider plugin directories
 .idea/.idea.*
 .idea/.idea_modules
-.idea/.ijwb/.project
+.ijwb/.project
 .idea/.idea_modules/.ijwb/.project
-.idea/.ijwb/
+.ijwb/
 
 # Ignore ReSharper files
 _ReSharper*/
