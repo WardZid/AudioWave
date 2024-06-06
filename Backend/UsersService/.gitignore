@@ -1,23 +1,45 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Ignore build output directories
+bin/
+obj/
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
+# Ignore user-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
 
-# testing
-/coverage
+# Ignore user-specific files (Mono)
+*.userprefs
 
-# production
-/build
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
 
-# misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Ignore .NET Core project directories
+project.lock.json
+project.fragment.lock.json
+artifacts/
 
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Ignore Visual Studio Code files
+.vscode/
+
+# Ignore JetBrains Rider files
+.idea/
+
+# Ignore Rider 2019.2 and earlier workspace
+.idea/workspace.xml
+
+# Ignore JetBrains Rider plugin directories
+.idea/.idea.*
+.idea/.idea_modules
+.idea/.ijwb/.project
+.idea/.idea_modules/.ijwb/.project
+.idea/.ijwb/
+
+# Ignore ReSharper files
+_ReSharper*/
+*.ReSharper
+*.DotSettings.user
+
+# Ignore other files
+.vs/
+TestResults/
