@@ -12,7 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<MyDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("UsersDatabasaeConnectionString")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("UsersDatabaseConnectionString")));
 
 var app = builder.Build();
 
