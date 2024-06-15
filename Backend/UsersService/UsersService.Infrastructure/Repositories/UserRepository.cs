@@ -50,9 +50,14 @@ namespace UsersService.Infrastructure.Repositories
             }
         }
 
-        public async Task<bool> UserExistsAsync(string username)
+        public async Task<bool> UsernameExistsAsync(string username)
         {
             return await _context.Users.AnyAsync(u => u.Username == username);
+        }
+
+        public async Task<bool> EmailExistsAsync(string email)
+        {
+            return await _context.Users.AnyAsync(u => u.Email == email);
         }
     }
 }

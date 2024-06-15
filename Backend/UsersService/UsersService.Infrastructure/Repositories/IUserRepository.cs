@@ -7,13 +7,14 @@ using UsersService.Infrastructure.Models;
 
 namespace UsersService.Infrastructure.Repositories
 {
-    internal interface IUserRepository
+    public interface IUserRepository
     {
         Task<User> GetUserByIdAsync(int id);
         Task<User> GetUserByUsernameAsync(string username);
         Task AddUserAsync(User user);
         Task UpdateUserAsync(User user);
         Task DeleteUserAsync(int id);
-        Task<bool> UserExistsAsync(string username);
+        Task<bool> UsernameExistsAsync(string username);
+        Task<bool> EmailExistsAsync(string email);
     }
 }
