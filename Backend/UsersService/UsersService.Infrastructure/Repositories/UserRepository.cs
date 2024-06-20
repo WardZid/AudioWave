@@ -18,14 +18,19 @@ namespace UsersService.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<User> GetUserByIdAsync(int id)
+        public async Task<User?> GetUserByIdAsync(int id)
         {
             return await _context.Users.FindAsync(id);
         }
 
-        public async Task<User> GetUserByUsernameAsync(string username)
+        public async Task<User?> GetUserByUsernameAsync(string username)
         {
             return await _context.Users.SingleOrDefaultAsync(u => u.Username == username);
+        }
+
+        public async Task<User?> GetUserByEmailAsync(string email)
+        {
+            return await _context.Users.SingleOrDefaultAsync(u => u.Email == email);
         }
 
         public async Task AddUserAsync(User user)

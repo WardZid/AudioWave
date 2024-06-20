@@ -10,10 +10,13 @@ namespace UsersService.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly TokenService _tokenService;
 
-        public AuthController(IUserService userService)
+        public AuthController(IUserService userService,
+            TokenService tokenService)
         {
             _userService = userService;
+            _tokenService = tokenService;
         }
 
         [HttpPost("register")]
@@ -24,7 +27,7 @@ namespace UsersService.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = await _userService.RegisterUserAsync(dto);
+            var result = await _userService.RegisterUserAsync(dto.Email, dto.Username, dto.Password, dto.FirstName, dto.LastName);
 
             if (!result)
             {
@@ -32,6 +35,25 @@ namespace UsersService.API.Controllers
             }
 
             return Ok("Registration successful");
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(UserLoginDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _userService.AuthenticateUserAsync(dto.Email, dto.Password);
+            if (user == null)
+            {
+                return Unauthorized("Invalid username or password");
+            }
+
+            // Authentication successful, generate and return JWT token
+            var token = _tokenService.GenerateToken(user.Id.ToString(), user.Email, 30);
+            return Ok(new { Token = token });
         }
 
         [HttpPost("check-username")]
