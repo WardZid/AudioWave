@@ -18,9 +18,25 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-// Add DB Context
-builder.Services.AddDbContext<UsersDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("UsersDBConnection")));
+
+string USERS_DB_CONNECTION_STRING;
+if (builder.Environment.IsProduction())
+{
+    // Access SQL password from environment variable
+    USERS_DB_CONNECTION_STRING = Environment.GetEnvironmentVariable("USERSDB_CONN");
+
+    // Add DB Context
+    builder.Services.AddDbContext<UsersDbContext>(options =>
+        options.UseSqlServer(USERS_DB_CONNECTION_STRING));
+}
+else
+{
+
+    // Add DB Context
+    builder.Services.AddDbContext<UsersDbContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("UsersDBConnection")));
+}
+
 
 
 // Configure JWT Authentication
@@ -57,8 +73,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 // UseAuthentication has to be before UseAuthorization. for whatever reason
 app.UseAuthentication();
