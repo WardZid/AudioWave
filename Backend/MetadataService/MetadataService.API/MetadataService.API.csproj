@@ -17,9 +17,4 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\MetadataService.Core\MetadataService.Core.csproj" />
-    <ProjectReference Include="..\MetadataService.Service\MetadataService.Service.csproj" />
-  </ItemGroup>
-
 </Project>
