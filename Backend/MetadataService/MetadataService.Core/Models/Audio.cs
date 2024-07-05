@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MetadataService.Core.Enitities;
+namespace MetadataService.Core.Models;
 
-public partial class AudioEntity
+public partial class Audio
 {
     public int Id { get; set; }
 
@@ -29,7 +29,7 @@ public partial class AudioEntity
 
     public DateTime? UploadedAt { get; set; }
 
-    public virtual StatusEntity? Status { get; set; }
+    public virtual Status? Status { get; set; }
 
-    public virtual VisibilityEntity? Visibility { get; set; }
+    public virtual Visibility? Visibility { get; set; }
 }

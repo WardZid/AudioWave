@@ -1,6 +1,8 @@
-﻿using MetadataService.Core.Enitities;
-using MetadataService.Core.Interfaces;
+﻿
+using MetadataService.Core.IRepositories;
+using MetadataService.Core.Models;
 using MetadataService.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace MetadataService.Infrastructure.Repositories
 {
-    internal class AudioRepository : IAudioRepository
+    public class AudioRepository : IAudioRepository
     {
         private readonly MetadataDbContext _context;
 
@@ -18,26 +20,41 @@ namespace MetadataService.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<AudioEntity?> GetAudioByIdAsync(int id)
+        public async Task<Audio> AddAsync(Audio entity)
         {
-            //Models.Audio aud = await _context.Audios.FindAsync(id);
-
-            throw new NotImplementedException();
+            await _context.Set<Audio>().AddAsync(entity);
+            await _context.SaveChangesAsync();
+            return entity;
         }
 
-        public async Task AddAudioAsync(AudioEntity audioEntity)
+        public async Task<bool> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var entity = await GetByIdAsync(id);
+            if (entity == null)
+            {
+                return false;
+            }
+
+            _context.Set<Audio>().Remove(entity);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public async Task DeleteAudioAsync(int id)
+        public async Task<IEnumerable<Audio>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _context.Set<Audio>().ToListAsync();
         }
 
-        public async Task UpdateAudioAsync(AudioEntity audioEntity)
+        public async Task<Audio?> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Set<Audio>().FindAsync(id);
+        }
+
+        public async Task<Audio> UpdateAsync(Audio entity)
+        {
+            _context.Set<Audio>().Update(entity);
+            await _context.SaveChangesAsync();
+            return entity;
         }
     }
 }

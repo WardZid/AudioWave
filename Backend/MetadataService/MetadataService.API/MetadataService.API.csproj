@@ -24,8 +24,4 @@
     <ProjectReference Include="..\MetadataService.Service\MetadataService.Service.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>

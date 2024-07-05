@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MetadataService.Infrastructure.Models;
+namespace MetadataService.Core.Models;
 
 public partial class Visibility
 {

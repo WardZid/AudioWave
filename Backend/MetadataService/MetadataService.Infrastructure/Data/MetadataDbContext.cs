@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using MetadataService.Infrastructure.Models;
+using MetadataService.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace MetadataService.Infrastructure.Data;
