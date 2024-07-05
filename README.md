@@ -55,7 +55,7 @@
             - [ ] View and Edit Uploaded Media 
 - [ ] Backend
     - [ ] API Gateway Microservice
-    - [ ] Users MicroService
+    - [x] Users MicroService
     - [ ] Audio Streaming Microservice
     - [ ] Audio Upload MicroService
     - [ ] Comments Microservice
