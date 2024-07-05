@@ -20,18 +20,33 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // Access SQL password from environment variable
 string USERS_DB_CONNECTION_STRING = Environment.GetEnvironmentVariable("USERSDB_CONN");
+if (string.IsNullOrEmpty(USERS_DB_CONNECTION_STRING))
+{
+    throw new InvalidOperationException("USERS_DB_CONNECTION_STRING environment variable is not set.");
+}
+//set conn string in the configuration
+builder.Configuration["ConnectionStrings:UsersDBConnection"] = USERS_DB_CONNECTION_STRING;
 
 // Add DB Context
 builder.Services.AddDbContext<UsersDbContext>(options =>
     options.UseSqlServer(USERS_DB_CONNECTION_STRING));
 
 
+// GET JWT SECRET FROM ENV VARS
+string JWT_SECRET = Environment.GetEnvironmentVariable("JWT_SECRET");
+
+if (string.IsNullOrEmpty(JWT_SECRET))
+{
+    throw new InvalidOperationException("JWT_SECRET environment variable is not set.");
+}
+
+// Update the configuration with the secret value
+builder.Configuration["JwtSettings:Secret"] = JWT_SECRET;
+
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 
-// GET JWT SECRET FROM ENV VARS
-string JWT_SECRET = Environment.GetEnvironmentVariable("JWT_SECRET");
-var secretKey = Encoding.UTF8.GetBytes(JWT_SECRET); //jwtSettings["Secret"]);
+var secretKey = Encoding.UTF8.GetBytes(jwtSettings["Secret"]);
 
 builder.Services.AddAuthentication(options =>
 {
