@@ -18,30 +18,20 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+// Access SQL password from environment variable
+string USERS_DB_CONNECTION_STRING = Environment.GetEnvironmentVariable("USERSDB_CONN");
 
-string USERS_DB_CONNECTION_STRING;
-if (builder.Environment.IsProduction())
-{
-    // Access SQL password from environment variable
-    USERS_DB_CONNECTION_STRING = Environment.GetEnvironmentVariable("USERSDB_CONN");
-
-    // Add DB Context
-    builder.Services.AddDbContext<UsersDbContext>(options =>
-        options.UseSqlServer(USERS_DB_CONNECTION_STRING));
-}
-else
-{
-
-    // Add DB Context
-    builder.Services.AddDbContext<UsersDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("UsersDBConnection")));
-}
-
+// Add DB Context
+builder.Services.AddDbContext<UsersDbContext>(options =>
+    options.UseSqlServer(USERS_DB_CONNECTION_STRING));
 
 
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = Encoding.UTF8.GetBytes(jwtSettings["Secret"]);
+
+// GET JWT SECRET FROM ENV VARS
+string JWT_SECRET = Environment.GetEnvironmentVariable("JWT_SECRET");
+var secretKey = Encoding.UTF8.GetBytes(JWT_SECRET); //jwtSettings["Secret"]);
 
 builder.Services.AddAuthentication(options =>
 {
