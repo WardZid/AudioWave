@@ -20,12 +20,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\MetadataService.Core\MetadataService.Core.csproj" />
+    <ProjectReference Include="..\MetadataService.Service\MetadataService.Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MetadataService.Core\MetadataService.Core.csproj" />
-    <ProjectReference Include="..\MetadataService.Service\MetadataService.Service.csproj" />
+    <Folder Include="Controllers\" />
   </ItemGroup>
 
 </Project>
