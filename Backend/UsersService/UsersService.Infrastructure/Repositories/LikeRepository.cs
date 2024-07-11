@@ -15,18 +15,18 @@ namespace UsersService.Infrastructure.Repositories
     {
         private readonly UsersDbContext _context= context;
 
-        public Task AddLikeAsync(Like like)
+        public async Task AddLikeAsync(Like like)
         {
             
-            _context.Likes.AddAsync( like );
-            _context.SaveChangesAsync();
+            await _context.Likes.AddAsync( like );
+            await _context.SaveChangesAsync();
 
-            return Task.CompletedTask;
         }
 
-        public Task DeleteLikeAsync(int audioId)
+        public async Task DeleteLikeAsync(Like like)
         {
-            throw new NotImplementedException();
+            _context.Likes.Remove(like);
+            await _context.SaveChangesAsync();
         }
 
         public Task<List<Like>> GetLikesByUserIdAsync(int userId)

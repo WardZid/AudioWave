@@ -38,4 +38,25 @@ public class LikeService(
         }
 
     }
+
+    public async Task<bool> RemoveLike(int userId, int audioId)
+    {
+        Like newLike = new()
+        {
+            UserId = userId,
+            AudioId = audioId,
+            LikedAt = DateTime.Now,
+        };
+
+        try
+        {
+            await _likeRepository.DeleteLikeAsync(newLike);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+
+    }
 }

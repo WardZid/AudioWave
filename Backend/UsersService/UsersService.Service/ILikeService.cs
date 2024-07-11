@@ -11,5 +11,6 @@ namespace UsersService.Service
     public interface ILikeService
     {
         Task<bool> AddLike(int userId, int audioId);
+        Task<bool> RemoveLike(int userId, int audioId);
     }
 }

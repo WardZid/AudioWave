@@ -17,10 +17,10 @@ namespace UsersService.API.Controllers
         private readonly ILikeService _likeService = likeService;
 
         [HttpPost("AddLike")]
-        public async Task<IActionResult> AddLike([FromHeader] [Required] int audioId)
+        public async Task<IActionResult> AddLike([FromHeader][Required] int audioId)
         {
-            if (ModelState.IsValid == false) 
-            { 
+            if (ModelState.IsValid == false)
+            {
                 return BadRequest(ModelState);
             }
             try
@@ -35,12 +35,42 @@ namespace UsersService.API.Controllers
 
 
                 bool added = await _likeService.AddLike(userId, audioId);
-                return Ok(added? "Added" : "Not Added");
+                return Ok(added ? "Added" : "Not Added");
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPost("RemoveLike")]
+        public async Task<IActionResult> RemoveLike([FromHeader][Required] int audioId)
+        {
+            if (ModelState.IsValid == false)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null)
+                {
+                    return Unauthorized("User ID not found in token.");
+                }
+
+                int userId = int.Parse(userIdClaim.Value);
+
+
+                if (await _likeService.RemoveLike(userId, audioId))
+                    return Ok();
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return BadRequest();
+        }
+
     }
 }

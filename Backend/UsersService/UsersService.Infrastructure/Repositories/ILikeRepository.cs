@@ -10,7 +10,7 @@ namespace UsersService.Infrastructure.Repositories
     public interface ILikeRepository
     {
         Task AddLikeAsync(Like like);
-        Task DeleteLikeAsync(int audioId);
+        Task DeleteLikeAsync(Like like);
         Task<List<Like>> GetLikesByUserIdAsync(int userId);
     }
 }
