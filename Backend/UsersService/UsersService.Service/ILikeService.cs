@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UsersService.Core.DTOs;
-using UsersService.Core.Entities;
+using UsersService.Infrastructure.Models;
 
 namespace UsersService.Service
 {
@@ -12,5 +12,6 @@ namespace UsersService.Service
     {
         Task<bool> AddLike(int userId, int audioId);
         Task<bool> RemoveLike(int userId, int audioId);
+        Task<List<Like>> GetAllLikes(int userId);
     }
 }

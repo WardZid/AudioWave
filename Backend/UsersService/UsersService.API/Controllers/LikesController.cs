@@ -4,73 +4,102 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using UsersService.Service;
+using UsersService.Infrastructure.Models;
 
-namespace UsersService.API.Controllers
+namespace UsersService.API.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+[Authorize]
+public class LikesController(
+    ILikeService likeService
+    ) : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class LikesController(
-        ILikeService likeService
-        ) : ControllerBase
+    private readonly ILikeService _likeService = likeService;
+
+    [HttpPost("AddLike")]
+    public async Task<IActionResult> AddLike([FromHeader][Required] int audioId)
     {
-        private readonly ILikeService _likeService = likeService;
-
-        [HttpPost("AddLike")]
-        public async Task<IActionResult> AddLike([FromHeader][Required] int audioId)
+        if (ModelState.IsValid == false)
         {
-            if (ModelState.IsValid == false)
-            {
-                return BadRequest(ModelState);
-            }
-            try
-            {
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                if (userIdClaim == null)
-                {
-                    return Unauthorized("User ID not found in token.");
-                }
-
-                int userId = int.Parse(userIdClaim.Value);
-
-
-                if (await _likeService.AddLike(userId, audioId))
-                    return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            return BadRequest();
+            return BadRequest(ModelState);
         }
-
-        [HttpPost("RemoveLike")]
-        public async Task<IActionResult> RemoveLike([FromHeader][Required] int audioId)
+        try
         {
-            if (ModelState.IsValid == false)
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
             {
-                return BadRequest(ModelState);
+                return Unauthorized("User ID not found in token.");
             }
-            try
+
+            int userId = int.Parse(userIdClaim.Value);
+
+
+            if (await _likeService.AddLike(userId, audioId))
+                return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        return BadRequest();
+    }
+
+    [HttpPost("RemoveLike")]
+    public async Task<IActionResult> RemoveLike([FromHeader][Required] int audioId)
+    {
+        if (ModelState.IsValid == false)
+        {
+            return BadRequest(ModelState);
+        }
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
             {
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                if (userIdClaim == null)
-                {
-                    return Unauthorized("User ID not found in token.");
-                }
-
-                int userId = int.Parse(userIdClaim.Value);
-
-
-                if (await _likeService.RemoveLike(userId, audioId))
-                    return Ok();
-
+                return Unauthorized("User ID not found in token.");
             }
-            catch (Exception ex)
+
+            int userId = int.Parse(userIdClaim.Value);
+
+
+            if (await _likeService.RemoveLike(userId, audioId))
+                return Ok();
+
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        return BadRequest();
+    }
+
+    [HttpGet("GetAll")]
+    public async Task<ActionResult<List<Like>>> GetAll()
+    {
+
+        if (ModelState.IsValid == false)
+        {
+            return BadRequest(ModelState);
+        }
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
             {
-                return BadRequest(ex.Message);
+                return Unauthorized("User ID not found in token.");
             }
-            return BadRequest();
+
+            int userId = int.Parse(userIdClaim.Value);
+
+
+            List<Like> likes = await _likeService.GetAllLikes(userId);
+
+            return Ok(likes);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
         }
 
     }

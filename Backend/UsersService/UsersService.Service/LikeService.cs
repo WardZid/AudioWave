@@ -57,6 +57,10 @@ public class LikeService(
         {
             return false;
         }
+    }
 
+    public async Task<List<Like>> GetAllLikes(int userId)
+    {
+        return await _likeRepository.GetLikesByUserIdAsync(userId);
     }
 }

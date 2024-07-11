@@ -29,9 +29,11 @@ namespace UsersService.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public Task<List<Like>> GetLikesByUserIdAsync(int userId)
+        public async Task<List<Like>> GetLikesByUserIdAsync(int userId)
         {
-            throw new NotImplementedException();
+            return await _context.Likes
+                .Where(like => like.UserId == userId)
+                .ToListAsync();
         }
     }
 }
