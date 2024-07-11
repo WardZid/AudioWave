@@ -34,13 +34,14 @@ namespace UsersService.API.Controllers
                 int userId = int.Parse(userIdClaim.Value);
 
 
-                bool added = await _likeService.AddLike(userId, audioId);
-                return Ok(added ? "Added" : "Not Added");
+                if (await _likeService.AddLike(userId, audioId))
+                    return Ok();
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
+            return BadRequest();
         }
 
         [HttpPost("RemoveLike")]
