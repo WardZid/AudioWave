@@ -4,6 +4,7 @@ using MetadataService.Infrastructure.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace MetadataService.API.Controllers
 {
@@ -17,7 +18,7 @@ namespace MetadataService.API.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Audio>> GetAudioById(int id)
+        public async Task<ActionResult<Audio>> GetAudio([Required] int id)
         {
             var audio = await _audioService.GetAudioById(id);
             if (audio == null)
@@ -36,7 +37,7 @@ namespace MetadataService.API.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<int>> AddAudio(AddAudioDto audioDto)
+        public async Task<ActionResult> AddAudio(AddAudioDto audioDto)
         {
             try
             {
@@ -89,14 +90,14 @@ namespace MetadataService.API.Controllers
 
         [Authorize]
         [HttpDelete("{id}")]
-        public async Task<ActionResult<bool>> DeleteAudio(int id)
+        public async Task<ActionResult> DeleteAudio(int id)
         {
-            var result = await _audioService.DeleteAudio(id);
-            if (!result)
+            var success = await _audioService.DeleteAudio(id);
+            if (success == false)
             {
                 return NotFound();
             }
-            return Ok(result);
+            return Ok("Audio deleted Successfully");
         }
     }
 }
