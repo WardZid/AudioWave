@@ -39,6 +39,15 @@ namespace MetadataService.Service
             return await _audioRepository.GetByIdAsync(id);
         }
 
+
+        public async Task<Audio?> GetAudioForListen(int id)
+        {
+            // Increment listen count
+            await _audioRepository.AddListenAsync(id);
+
+            return await _audioRepository.GetByIdAsync(id);
+        }
+
         public async Task<IEnumerable<Audio>> GetAllAudios()
         {
             return await _audioRepository.GetAllAsync();

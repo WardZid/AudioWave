@@ -56,5 +56,21 @@ namespace MetadataService.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return entity;
         }
+
+
+        public async Task AddListenAsync(int audioId)
+        {
+            Audio? audio = await _context.Audios.FindAsync(audioId);
+
+            if (audio == null)
+            {
+                throw new KeyNotFoundException("Audio not found.");
+            }
+
+            audio.Listens += 1;
+
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

@@ -32,6 +32,21 @@ namespace MetadataService.API.Controllers
             }
         }
 
+        [HttpGet("GetAudioForListen/{id}")]
+        public async Task<ActionResult<Audio>> GetAudioForListen([Required] int id)
+        {
+            try
+            {
+                var audio = await _audioService.GetAudioForListen(id);
+
+                return Ok(audio);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Audio>>> GetAllAudios()
         {

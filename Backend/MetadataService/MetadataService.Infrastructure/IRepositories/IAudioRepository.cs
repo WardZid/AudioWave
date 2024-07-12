@@ -10,5 +10,6 @@ namespace MetadataService.Infrastructure.IRepositories
 {
     public interface IAudioRepository : IRepository<Audio>
     {
+        Task AddListenAsync(int audioId);
     }
 }
