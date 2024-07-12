@@ -45,7 +45,7 @@ public class LikesController(
         return BadRequest();
     }
 
-    [HttpPost("RemoveLike")]
+    [HttpDelete("RemoveLike")]
     public async Task<IActionResult> RemoveLike([FromHeader][Required] int audioId)
     {
         if (ModelState.IsValid == false)

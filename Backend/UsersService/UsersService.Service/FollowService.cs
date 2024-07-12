@@ -13,8 +13,14 @@ namespace UsersService.Service
         ) : IFollowService
     {
         private readonly IFollowRepository _followRepository = followRepository;
+
+
         public async Task<bool> AddFollow(int followerId, int followeeId)
         {
+            if (followerId == followeeId)
+            {
+                throw new ArgumentException("cannot follow self");
+            }
             Follow follow = new()
             {
                 FollowerId = followerId,
@@ -26,6 +32,12 @@ namespace UsersService.Service
 
         public async Task<bool> RemoveFollow(int followerId, int followeeId)
         {
+
+            if (followerId == followeeId)
+            {
+                throw new ArgumentException("cannot unfollow self");
+            }
+
             Follow follow = new()
             {
                 FollowerId = followerId,
