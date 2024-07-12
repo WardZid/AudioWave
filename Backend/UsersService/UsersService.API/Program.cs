@@ -22,6 +22,7 @@ builder.Services.AddScoped<ILikeService, LikeService>();
 //Add Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ILikeRepository, LikeRepository>();
+builder.Services.AddScoped<IFollowRepository, FollowRepository>();
 
 // Access SQL password from environment variable
 string USERS_DB_CONNECTION_STRING = Environment.GetEnvironmentVariable("USERSDB_CONN");
