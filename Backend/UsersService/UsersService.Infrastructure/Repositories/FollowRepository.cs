@@ -16,16 +16,18 @@ namespace UsersService.Infrastructure.Repositories
 
         private readonly UsersDbContext _context = context;
 
-        public async Task AddFollowAsync(Follow follow)
+        public async Task<bool> AddFollowAsync(Follow follow)
         {
             await _context.Follows.AddAsync( follow );
-            await _context.SaveChangesAsync();
+            var changes = await _context.SaveChangesAsync();
+            return changes > 0;
         }
 
-        public async Task RemoveFollowAsync(Follow follow)
+        public async Task<bool> RemoveFollowAsync(Follow follow)
         {
             _context.Follows.Remove(follow);
-            await _context.SaveChangesAsync();
+            var changes = await _context.SaveChangesAsync();
+            return changes > 0;
         }
 
         public async Task<IEnumerable<User>> GetAllFollowersAsync(int userId)

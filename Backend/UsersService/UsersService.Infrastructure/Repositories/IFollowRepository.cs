@@ -9,8 +9,8 @@ namespace UsersService.Infrastructure.Repositories
 {
     public interface IFollowRepository
     {
-        Task AddFollowAsync(Follow follow);
-        Task RemoveFollowAsync(Follow follow);
+        Task<bool> AddFollowAsync(Follow follow);
+        Task<bool> RemoveFollowAsync(Follow follow);
         Task<IEnumerable<User>> GetAllFollowersAsync(int userId);
         Task<IEnumerable<User>> GetAllFollowingAsync(int userId);
     }

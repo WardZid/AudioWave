@@ -18,6 +18,7 @@ builder.Services.AddSwaggerGen();
 //Add Services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILikeService, LikeService>();
+builder.Services.AddScoped<IFollowService, FollowService>();
 
 //Add Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
