@@ -20,19 +20,31 @@ namespace MetadataService.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Audio>> GetAudio([Required] int id)
         {
-            var audio = await _audioService.GetAudioById(id);
-            if (audio == null)
+            try
             {
-                return NotFound();
+                var audio = await _audioService.GetAudioById(id);
+
+                return Ok(audio);
             }
-            return Ok(audio);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Audio>>> GetAllAudios()
         {
-            var audios = await _audioService.GetAllAudios();
-            return Ok(audios);
+            try
+            {
+                var audios = await _audioService.GetAllAudios();
+                return Ok(audios);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [Authorize]
@@ -52,7 +64,7 @@ namespace MetadataService.API.Controllers
                 {
                     return StatusCode(500);
                 }
-                return CreatedAtAction(nameof(GetAudioById), new { id = audioId }, audioId);
+                return CreatedAtAction(nameof(GetAudio), new { id = audioId }, audioId);
             }
             catch (Exception ex)
             {
