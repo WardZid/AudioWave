@@ -7,17 +7,14 @@ namespace UsersService.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController(
+        IUserService userService,
+            TokenService tokenService
+        ) : ControllerBase
     {
-        private readonly IUserService _userService;
-        private readonly TokenService _tokenService;
+        private readonly IUserService _userService = userService;
+        private readonly TokenService _tokenService = tokenService;
 
-        public AuthController(IUserService userService,
-            TokenService tokenService)
-        {
-            _userService = userService;
-            _tokenService = tokenService;
-        }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserRegistrationDto dto)

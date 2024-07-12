@@ -15,8 +15,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//Add Services
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ILikeService, LikeService>();
+builder.Services.AddScoped<IFollowService, FollowService>();
+
+//Add Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ILikeRepository, LikeRepository>();
+builder.Services.AddScoped<IFollowRepository, FollowRepository>();
 
 // Access SQL password from environment variable
 string USERS_DB_CONNECTION_STRING = Environment.GetEnvironmentVariable("USERSDB_CONN");
@@ -67,6 +74,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+//Add special token service
 builder.Services.AddSingleton<TokenService>();
 
 
