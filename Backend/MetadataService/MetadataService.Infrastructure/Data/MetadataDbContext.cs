@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using MetadataService.Core.Models;
+using MetadataService.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace MetadataService.Infrastructure.Data;
@@ -26,13 +26,13 @@ public partial class MetadataDbContext : DbContext
     {
         modelBuilder.Entity<Audio>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Audios__3214EC07AC41CD37");
+            entity.HasKey(e => e.Id).HasName("PK__Audios__3214EC07A4C0E5E1");
 
             entity.Property(e => e.Description)
                 .HasMaxLength(1023)
                 .HasDefaultValue("");
             entity.Property(e => e.FileChecksum).HasMaxLength(16);
-            entity.Property(e => e.FileType).HasMaxLength(8);
+            entity.Property(e => e.FileType).HasMaxLength(32);
             entity.Property(e => e.Title).HasMaxLength(127);
             entity.Property(e => e.UploadedAt)
                 .HasDefaultValueSql("(getdate())")
@@ -40,18 +40,18 @@ public partial class MetadataDbContext : DbContext
 
             entity.HasOne(d => d.Status).WithMany(p => p.Audios)
                 .HasForeignKey(d => d.StatusId)
-                .HasConstraintName("FK__Audios__StatusId__7C4F7684");
+                .HasConstraintName("FK__Audios__StatusId__70DDC3D8");
 
             entity.HasOne(d => d.Visibility).WithMany(p => p.Audios)
                 .HasForeignKey(d => d.VisibilityId)
-                .HasConstraintName("FK__Audios__Visibili__7D439ABD");
+                .HasConstraintName("FK__Audios__Visibili__71D1E811");
         });
 
         modelBuilder.Entity<Status>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Statuses__3214EC07BDF61ADF");
+            entity.HasKey(e => e.Id).HasName("PK__Statuses__3214EC070EB07004");
 
-            entity.HasIndex(e => e.Status1, "UQ__Statuses__3A15923F4BEDB6E3").IsUnique();
+            entity.HasIndex(e => e.Status1, "UQ__Statuses__3A15923F7C6D44DA").IsUnique();
 
             entity.Property(e => e.Description)
                 .HasMaxLength(255)
@@ -64,9 +64,9 @@ public partial class MetadataDbContext : DbContext
 
         modelBuilder.Entity<Visibility>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Visibili__3214EC075DE3BB6D");
+            entity.HasKey(e => e.Id).HasName("PK__Visibili__3214EC075BFF7DF3");
 
-            entity.HasIndex(e => e.Visibility1, "UQ__Visibili__F63D27FF748B55C1").IsUnique();
+            entity.HasIndex(e => e.Visibility1, "UQ__Visibili__F63D27FF41E1EA2F").IsUnique();
 
             entity.Property(e => e.Description)
                 .HasMaxLength(255)

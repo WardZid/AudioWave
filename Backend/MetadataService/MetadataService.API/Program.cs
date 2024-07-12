@@ -1,5 +1,5 @@
-using MetadataService.Core.IRepositories;
-using MetadataService.Core.IServices;
+using MetadataService.Infrastructure.IRepositories;
+using MetadataService.Service.IServices;
 using MetadataService.Infrastructure.Data;
 using MetadataService.Infrastructure.Repositories;
 using MetadataService.Service;

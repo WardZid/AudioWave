@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MetadataService.Core.Models;
+namespace MetadataService.Infrastructure.Models;
 
 public partial class Audio
 {
@@ -21,13 +21,15 @@ public partial class Audio
 
     public byte[]? FileChecksum { get; set; }
 
+    public int? Listens { get; set; }
+
     public int? StatusId { get; set; }
 
     public int? VisibilityId { get; set; }
 
-    public int? UploaderId { get; set; }
-
     public DateTime? UploadedAt { get; set; }
+
+    public int? UploaderId { get; set; }
 
     public virtual Status? Status { get; set; }
 

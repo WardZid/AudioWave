@@ -1,12 +1,12 @@
 ﻿using MetadataService.Core.DTOs;
-using MetadataService.Core.Models;
+using MetadataService.Infrastructure.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MetadataService.Core.IServices
+namespace MetadataService.Service.IServices
 {
     public interface IAudioService
     {

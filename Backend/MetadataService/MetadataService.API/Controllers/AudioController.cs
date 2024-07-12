@@ -1,6 +1,6 @@
 ﻿using MetadataService.Core.DTOs;
-using MetadataService.Core.IServices;
-using MetadataService.Core.Models;
+using MetadataService.Service.IServices;
+using MetadataService.Infrastructure.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,13 +9,12 @@ namespace MetadataService.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AudioController : ControllerBase
+    public class AudioController(
+        IAudioService audioService
+        ) : ControllerBase
     {
-        private readonly IAudioService _audioService;
-        public AudioController(IAudioService audioService)
-        {
-            _audioService = audioService;
-        }
+        private readonly IAudioService _audioService = audioService;
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Audio>> GetAudioById(int id)

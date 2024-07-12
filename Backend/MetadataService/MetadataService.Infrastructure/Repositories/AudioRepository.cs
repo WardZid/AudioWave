@@ -1,6 +1,6 @@
 ﻿
-using MetadataService.Core.IRepositories;
-using MetadataService.Core.Models;
+using MetadataService.Infrastructure.IRepositories;
+using MetadataService.Infrastructure.Models;
 using MetadataService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System;

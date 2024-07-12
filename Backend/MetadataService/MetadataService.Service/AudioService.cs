@@ -1,8 +1,8 @@
 ﻿
 using MetadataService.Core.DTOs;
-using MetadataService.Core.IRepositories;
-using MetadataService.Core.IServices;
-using MetadataService.Core.Models;
+using MetadataService.Infrastructure.IRepositories;
+using MetadataService.Service.IServices;
+using MetadataService.Infrastructure.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
