@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace MetadataService.API.Controllers
 {
@@ -64,16 +65,27 @@ namespace MetadataService.API.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult> AddAudio(AddAudioDto audioDto)
+        public async Task<IActionResult> AddAudio(AddAudioDto audioDto)
         {
+
+            if (audioDto == null)
+            {
+                return BadRequest();
+            }
+
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User ID not found in token.");
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
             try
             {
-                if (audioDto == null)
-                {
-                    return BadRequest();
-                }
 
-                var audioId = await _audioService.AddAudio(audioDto);
+                var audioId = await _audioService.AddAudio(audioDto, userId);
 
                 if (audioId == 0)
                 {
@@ -117,7 +129,7 @@ namespace MetadataService.API.Controllers
 
         [Authorize]
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteAudio(int id)
+        public async Task<IActionResult> DeleteAudio(int id)
         {
             var success = await _audioService.DeleteAudio(id);
             if (success == false)

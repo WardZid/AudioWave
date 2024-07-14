@@ -22,6 +22,7 @@ builder.Services.AddScoped<IAudioService, AudioService>();
 
 //Repositories
 builder.Services.AddScoped<IAudioRepository, AudioRepository>();
+builder.Services.AddScoped<IStatusRepository, StatusRepository>();
 
 
 // Access SQL password from environment variable

@@ -10,11 +10,11 @@ namespace MetadataService.Service.IServices
 {
     public interface IAudioService
     {
-        Task<Audio?> GetAudioById(int id);
-        Task<Audio?> GetAudioForListen(int id);
+        Task<Audio?> GetAudioById(int audioId);
+        Task<Audio?> GetAudioForListen(int audioId);
         Task<IEnumerable<Audio>> GetAllAudios();
-        Task<int> AddAudio(AddAudioDto audioDto);
+        Task<int> AddAudio(AddAudioDto audioDto, int uploaderId);
         Task<Audio?> UpdateAudio(Audio audio);
-        Task<bool> DeleteAudio(int id);
+        Task<bool> DeleteAudio(int audioId);
     }
 }

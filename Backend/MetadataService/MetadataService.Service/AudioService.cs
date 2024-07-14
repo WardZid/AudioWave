@@ -12,13 +12,16 @@ using System.Threading.Tasks;
 namespace MetadataService.Service
 {
     public class AudioService(
-        IAudioRepository audioRepository
+        IAudioRepository audioRepository,
+        IStatusRepository statusRepository
         ) : IAudioService
     {
         private readonly IAudioRepository _audioRepository = audioRepository;
+        private readonly IStatusRepository _statusRepository = statusRepository;
 
-        public async Task<int> AddAudio(AddAudioDto audioDto)
+        public async Task<int> AddAudio(AddAudioDto audioDto, int uploaderId)
         {
+            Status uploadingStatus = await _statusRepository.GetStatusByTitleAsync("UPLOADING");
             var audio = new Audio
             {
                 Title = audioDto.Title,
@@ -27,25 +30,32 @@ namespace MetadataService.Service
                 DurationSec = audioDto.DurationSec,
                 FileSize = audioDto.FileSize,
                 FileType = audioDto.FileType,
-                VisibilityId = audioDto.VisibilityId
+                FileChecksum = audioDto.FileChecksum,
+                VisibilityId = audioDto.VisibilityId,
+                StatusId = uploadingStatus.Id,
+                Listens = 0,
+                UploadedAt = DateTime.Now,
+                UploaderId = uploaderId
+
             };
 
             var addedAudio = await _audioRepository.AddAsync(audio);
-            return addedAudio.Id; 
+
+            return addedAudio.Id;
         }
 
-        public async Task<Audio?> GetAudioById(int id)
+        public async Task<Audio?> GetAudioById(int audioId)
         {
-            return await _audioRepository.GetByIdAsync(id);
+            return await _audioRepository.GetByIdAsync(audioId);
         }
 
 
-        public async Task<Audio?> GetAudioForListen(int id)
+        public async Task<Audio?> GetAudioForListen(int audioId)
         {
             // Increment listen count
-            await _audioRepository.AddListenAsync(id);
+            await _audioRepository.AddListenAsync(audioId);
 
-            return await _audioRepository.GetByIdAsync(id);
+            return await _audioRepository.GetByIdAsync(audioId);
         }
 
         public async Task<IEnumerable<Audio>> GetAllAudios()
@@ -64,9 +74,9 @@ namespace MetadataService.Service
             return await _audioRepository.UpdateAsync(audio);
         }
 
-        public async Task<bool> DeleteAudio(int id)
+        public async Task<bool> DeleteAudio(int audioId)
         {
-            return await _audioRepository.DeleteAsync(id);
+            return await _audioRepository.DeleteAsync(audioId);
         }
     }
 }
