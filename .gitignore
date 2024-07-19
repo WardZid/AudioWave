@@ -38,3 +38,6 @@ test-results/
 24-1-D-44 Braude Capstone Project Book.docx
 24-1-D-44 Braude Capstone Project Presentation.pptx
 README.md
+
+# Ignore env files
+.env
