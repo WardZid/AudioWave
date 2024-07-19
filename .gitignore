@@ -19,10 +19,12 @@ Dockerfile*
 # Ignore logs and temp files
 *.log
 *.tmp
+*.swp
 
 # Ignore system files
 .DS_Store
 Thumbs.db
+Desktop.ini
 
 # Ignore Node.js modules (if you have any frontend projects using Node.js)
 node_modules/
@@ -41,3 +43,14 @@ README.md
 
 # Ignore env files
 .env
+
+# Ignore rust
+# Compiled output
+target/
+
+# Dependencies
+Cargo.lock
+
+# Rust specific files
+*.rlib
+*.dSYM
