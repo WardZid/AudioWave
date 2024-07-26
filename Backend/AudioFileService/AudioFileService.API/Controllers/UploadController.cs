@@ -22,7 +22,8 @@ namespace AudioFileService.API.Controllers
         [HttpPost("Chunk")]
         public async Task<IActionResult> UploadChunk(UploadChunkDto uploadChunkDto)
         {
-            if (ModelState.IsValid == false) {
+            if (ModelState.IsValid == false)
+            {
                 return BadRequest();
             }
             try
@@ -34,10 +35,10 @@ namespace AudioFileService.API.Controllers
                 }
 
                 int userId = int.Parse(userIdClaim.Value);
-                
+
                 string chunkKey = await _uploadService.UploadChunkAsync(uploadChunkDto, userId);
 
-                return Created(string.Empty,chunkKey);
+                return Created(string.Empty, chunkKey);
             }
             catch (Exception ex)
             {

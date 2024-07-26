@@ -11,8 +11,6 @@ namespace AudioFileService.API.Services
         ) : IUploadService
     {
         private readonly IAmazonS3 _s3Client = s3Client;
-        //private readonly ILogger _logger;
-        //private readonly IServiceProvider _serviceProvider;
 
         private readonly string bucketName = "audiowave-bucket";
         public async Task<string> UploadChunkAsync(UploadChunkDto uploadChunkDto, int uploaderId)
