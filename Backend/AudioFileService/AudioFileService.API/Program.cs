@@ -1,3 +1,4 @@
+using Amazon.S3;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -11,25 +12,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Fetch and save Env Variables for AWS
-string AWS_ACCESS_KEY_ID = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID");
-if (string.IsNullOrEmpty(AWS_ACCESS_KEY_ID))
-{
-    throw new InvalidOperationException("AWS_ACCESS_KEY_ID environment variable is not set.");
-}
-builder.Configuration["AWS:AccessKeyId"] = AWS_ACCESS_KEY_ID;
-
-
-string AWS_SECRET_ACCESS_KEY = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
-if (string.IsNullOrEmpty(AWS_SECRET_ACCESS_KEY))
-{
-    throw new InvalidOperationException("AWS_SECRET_ACCESS_KEY environment variable is not set.");
-}
-
-builder.Configuration["AWS:SecretAccessKey"] = AWS_SECRET_ACCESS_KEY;
-
-
-
+// AWS config
+builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+builder.Services.AddAWSService<IAmazonS3>();
 
 // GET JWT SECRET FROM ENV VARS
 string JWT_SECRET = Environment.GetEnvironmentVariable("JWT_SECRET");
@@ -64,6 +49,8 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(secretKey)
     };
 });
+
+
 
 
 
