@@ -1,4 +1,6 @@
 using Amazon.S3;
+using AudioFileService.API.Services;
+using AudioFileService.API.Services.IServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -11,6 +13,10 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Services
+builder.Services.AddScoped<IUploadService, UploadService>();
+
 
 // AWS config
 builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
