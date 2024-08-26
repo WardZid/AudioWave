@@ -4,6 +4,6 @@ namespace AudioFileService.API.Services.IServices
 {
     public interface IUploadService
     {
-        Task<string> UploadChunkAsync(UploadChunkDto uploadChunkRequest, int uploaderId);
+        Task<string> UploadChunkAsync(UploadChunkDto uploadChunkRequest, int uploaderId, string bucketName);
     }
 }
