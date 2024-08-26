@@ -12,7 +12,6 @@ namespace AudioFileService.API.Services
     {
         private readonly IAmazonS3 _s3Client = s3Client;
 
-        private readonly string bucketName = "audiowave-bucket";
         private readonly List<string> allowedAudioMimeTypes = new List<string>
         {
             "audio/mpeg",    // MP3
@@ -25,7 +24,7 @@ namespace AudioFileService.API.Services
             "audio/x-aac",   // AAC
         };
 
-        public async Task<string> UploadChunkAsync(UploadChunkDto uploadChunkDto, int uploaderId)
+        public async Task<string> UploadChunkAsync(UploadChunkDto uploadChunkDto, int uploaderId, string bucketName)
         {
             if (allowedAudioMimeTypes.Contains(uploadChunkDto.AudioChunk.ContentType) == false)
             {
@@ -34,7 +33,8 @@ namespace AudioFileService.API.Services
 
             //TODO possibly convert all audio chunks to one select type
 
-            string s3ChunkKey = $"{uploadChunkDto.AudioId}_{uploaderId}_{uploadChunkDto.ChunkNumber}_{uploadChunkDto.TotalChunks}_{uploadChunkDto.ChunkDurationSecs}";
+            //audioid as dir and chunk-num as file name
+            string s3ChunkKey = $"{uploadChunkDto.AudioId}/{uploadChunkDto.ChunkNumber}";
 
             var request = new PutObjectRequest()
             {

@@ -36,7 +36,7 @@ namespace AudioFileService.API.Controllers
 
                 int userId = int.Parse(userIdClaim.Value);
 
-                string chunkKey = await _uploadService.UploadChunkAsync(uploadChunkDto, userId);
+                string chunkKey = await _uploadService.UploadChunkAsync(uploadChunkDto, userId, "audiowave-bucket");
 
                 return Created(string.Empty, chunkKey);
             }
