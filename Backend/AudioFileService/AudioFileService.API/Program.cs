@@ -16,7 +16,7 @@ builder.Services.AddSwaggerGen();
 
 // Services
 builder.Services.AddScoped<IUploadService, UploadService>();
-
+builder.Services.AddScoped<IPlaybackService, PlaybackService>();
 
 // AWS config
 builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
