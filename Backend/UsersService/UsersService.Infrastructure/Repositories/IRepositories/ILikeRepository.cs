@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UsersService.Infrastructure.Models;
 
-namespace UsersService.Infrastructure.Repositories
+namespace UsersService.Infrastructure.Repositories.IRepositories
 {
     public interface ILikeRepository
     {

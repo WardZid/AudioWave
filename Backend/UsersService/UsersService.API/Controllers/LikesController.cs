@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
-using UsersService.Service;
 using UsersService.Infrastructure.Models;
+using UsersService.Service.IService;
 
 namespace UsersService.API.Controllers;
 

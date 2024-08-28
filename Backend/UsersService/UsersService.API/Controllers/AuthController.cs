@@ -9,7 +9,7 @@ namespace UsersService.API.Controllers
     [ApiController]
     public class AuthController(
         IUserService userService,
-            TokenService tokenService
+        TokenService tokenService
         ) : ControllerBase
     {
         private readonly IUserService _userService = userService;

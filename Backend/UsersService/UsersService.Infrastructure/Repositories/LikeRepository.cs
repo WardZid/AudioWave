@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UsersService.Infrastructure.Data;
 using UsersService.Infrastructure.Models;
+using UsersService.Infrastructure.Repositories.IRepositories;
 
 namespace UsersService.Infrastructure.Repositories
 {

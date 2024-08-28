@@ -5,9 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using UsersService.Core.DTOs;
 using UsersService.Core.Entities;
-using UsersService.Infrastructure.Repositories;
 using UsersService.Infrastructure.Models;
 using System.Security.Cryptography;
+using UsersService.Service.IService;
+using UsersService.Infrastructure.Repositories.IRepositories;
 
 namespace UsersService.Service
 {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UsersService.Core.DTOs;
 using UsersService.Infrastructure.Models;
 
-namespace UsersService.Service
+namespace UsersService.Service.IService
 {
     public interface ILikeService
     {

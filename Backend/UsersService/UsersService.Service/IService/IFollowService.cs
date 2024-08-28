@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UsersService.Infrastructure.Models;
 
-namespace UsersService.Service
+namespace UsersService.Service.IService
 {
     public interface IFollowService
     {
