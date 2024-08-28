@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using UsersService.Core.DTOs;
 using UsersService.Service;
+using UsersService.Service.IService;
 
 namespace UsersService.API.Controllers
 {

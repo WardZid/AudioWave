@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UsersService.Infrastructure.Models;
 using UsersService.Infrastructure.Repositories;
+using UsersService.Infrastructure.Repositories.IRepositories;
 using UsersService.Service.IService;
 
 namespace UsersService.Service
