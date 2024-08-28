@@ -27,6 +27,10 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ILikeRepository, LikeRepository>();
 builder.Services.AddScoped<IFollowRepository, FollowRepository>();
 
+
+
+
+//######################################################################## UsersDB start
 // Access SQL password from environment variable
 string USERS_DB_CONNECTION_STRING = Environment.GetEnvironmentVariable("USERSDB_CONN");
 if (string.IsNullOrEmpty(USERS_DB_CONNECTION_STRING))
@@ -39,8 +43,28 @@ builder.Configuration["ConnectionStrings:UsersDBConnection"] = USERS_DB_CONNECTI
 // Add DB Context
 builder.Services.AddDbContext<UsersDbContext>(options =>
     options.UseSqlServer(USERS_DB_CONNECTION_STRING));
+//######################################################################## UsersDB end
 
 
+
+
+//######################################################################## MongoDB start
+string MONGO_CRED_SECRET_CONN = Environment.GetEnvironmentVariable("MONGO_CRED_SECRET_CONN");
+if (string.IsNullOrEmpty(MONGO_CRED_SECRET_CONN))
+{
+    throw new InvalidOperationException("MONGO_CRED_SECRET_CONN environment variable is not set.");
+}
+//set conn string in the configuration
+builder.Configuration["ConnectionStrings:MONGO_CRED_SECRET_CONN"] = MONGO_CRED_SECRET_CONN;
+
+builder.Services.AddSingleton<AuthEncryptionService>();
+//######################################################################## MongoDB end
+
+
+
+
+
+//######################################################################## JWT start
 // GET JWT SECRET FROM ENV VARS
 string JWT_SECRET = Environment.GetEnvironmentVariable("JWT_SECRET");
 
@@ -78,6 +102,7 @@ builder.Services.AddAuthentication(options =>
 
 //Add special token service
 builder.Services.AddSingleton<TokenService>();
+//######################################################################## JWT end
 
 
 var app = builder.Build();
