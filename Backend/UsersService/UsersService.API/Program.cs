@@ -4,7 +4,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using UsersService.Infrastructure.Data;
 using UsersService.Infrastructure.Repositories;
+using UsersService.Infrastructure.Repositories.IRepositories;
 using UsersService.Service;
+using UsersService.Service.IService;
 
 var builder = WebApplication.CreateBuilder(args);
 
