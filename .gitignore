@@ -14,6 +14,7 @@ obj/
 
 # Ignore Docker files
 docker-compose.override.yml
+docker-compose.yml
 Dockerfile*
 
 # Ignore logs and temp files
