@@ -56,8 +56,9 @@
 - [ ] Backend
     - [ ] API Gateway Microservice
     - [x] Users MicroService
-    - [ ] Audio Streaming Microservice
-    - [ ] Audio Upload MicroService
+    - [x] Audio Streaming Microservice
+    - [x] Audio Upload MicroService
+    - [ ] Playlists Microservice
     - [ ] Comments Microservice
     - [ ] Recommendation MicroService (optional)
 
