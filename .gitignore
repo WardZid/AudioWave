@@ -11,6 +11,7 @@
 # Ignore build results
 bin/
 obj/
+libs/
 
 # Ignore Docker files
 docker-compose.override.yml
