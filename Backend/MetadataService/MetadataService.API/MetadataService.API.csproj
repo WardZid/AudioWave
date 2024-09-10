@@ -24,4 +24,10 @@
     <ProjectReference Include="..\MetadataService.Service\MetadataService.Service.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="AudioWaveBroker">
+      <HintPath>bin\Debug\net8.0\AudioWaveBroker.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

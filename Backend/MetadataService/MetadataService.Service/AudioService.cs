@@ -3,21 +3,46 @@ using MetadataService.Core.DTOs;
 using MetadataService.Infrastructure.IRepositories;
 using MetadataService.Service.IServices;
 using MetadataService.Infrastructure.Models;
+using AudioWaveBroker;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace MetadataService.Service
 {
-    public class AudioService(
-        IAudioRepository audioRepository,
-        IStatusRepository statusRepository
-        ) : IAudioService
+    public class AudioService: IAudioService
     {
-        private readonly IAudioRepository _audioRepository = audioRepository;
-        private readonly IStatusRepository _statusRepository = statusRepository;
+        private readonly IAudioRepository _audioRepository;
+        private readonly IStatusRepository _statusRepository;
+        private readonly MessageBroker _messageBroker;
+
+        public AudioService(
+            IAudioRepository audioRepository,
+            IStatusRepository statusRepository
+            )
+        {
+            _audioRepository = audioRepository;
+            _statusRepository = statusRepository;
+
+            _messageBroker = new MessageBroker("MetadataQueue", HandleMessage);
+        }
+        private void HandleMessage(BrokerMessage message)
+        {
+
+            switch (message.Type)
+            {
+                case "UserCreated":
+                    // Handle user creation event
+                    break;
+                case "AudioUploaded":
+                    // Handle audio uploaded event
+                    break;
+                    // Add more message types as needed
+            }
+        }
 
         public async Task<int> AddAudio(AddAudioDto audioDto, int uploaderId)
         {

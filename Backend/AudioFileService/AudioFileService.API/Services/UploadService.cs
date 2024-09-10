@@ -2,15 +2,37 @@
 using Amazon.S3.Model;
 using AudioFileService.API.DTOs;
 using AudioFileService.API.Services.IServices;
+using AudioWaveBroker;
 using System.Reflection;
 
 namespace AudioFileService.API.Services
 {
-    public class UploadService(
-        IAmazonS3 s3Client
-        ) : IUploadService
+    public class UploadService: IUploadService
     {
-        private readonly IAmazonS3 _s3Client = s3Client;
+        private readonly IAmazonS3 _s3Client;
+        private readonly MessageBroker _messageBroker;
+
+        public UploadService(IAmazonS3 s3Client)
+        {
+            _s3Client = s3Client;
+
+            _messageBroker = new MessageBroker("UploadQueue", HandleMessage);
+
+        }
+        private void HandleMessage(BrokerMessage message)
+        {
+
+            switch (message.Type)
+            {
+                case "UserCreated":
+                    // Handle user creation event
+                    break;
+                case "AudioUploaded":
+                    // Handle audio uploaded event
+                    break;
+                    // Add more message types as needed
+            }
+        }
 
         private readonly List<string> allowedAudioMimeTypes = new List<string>
         {
@@ -44,6 +66,11 @@ namespace AudioFileService.API.Services
             };
             request.Metadata.Add("Content-Type", uploadChunkDto.AudioChunk.ContentType);
             var response = await _s3Client.PutObjectAsync(request);
+
+            if (uploadChunkDto.ChunkNumber == uploadChunkDto.TotalChunks)
+            {
+
+            }
 
             return s3ChunkKey;
         }
