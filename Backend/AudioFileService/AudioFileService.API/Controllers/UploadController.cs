@@ -11,7 +11,7 @@ namespace AudioFileService.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    
     public class UploadController(
         IUploadService uploadService
         ) : ControllerBase

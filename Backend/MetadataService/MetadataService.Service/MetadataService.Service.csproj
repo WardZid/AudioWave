@@ -26,4 +26,12 @@
     <ProjectReference Include="..\MetadataService.Infrastructure\MetadataService.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="AudioWaveBroker">
+		<!-- keep slashes forward for linux docker containers-->
+      <HintPath>../libs/AudioWaveBroker.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+
 </Project>

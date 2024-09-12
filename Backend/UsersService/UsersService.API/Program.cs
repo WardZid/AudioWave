@@ -1,3 +1,4 @@
+using AudioWaveBroker;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -21,6 +22,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILikeService, LikeService>();
 builder.Services.AddScoped<IFollowService, FollowService>();
+
+builder.Services.AddHostedService<MessageConsumerService>(); //for rabbitmq
+builder.Services.AddTransient<MessageProducerService>();    //for rabbitmq
+builder.Services.AddSingleton<IMessageHandler, UsersMessageHandler>(); //for rabbitmq
 
 //Add Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();

@@ -13,34 +13,40 @@ using System.Text.Json;
 
 namespace MetadataService.Service
 {
-    public class AudioService: IAudioService
+    public class AudioService : IAudioService, IDisposable
     {
         private readonly IAudioRepository _audioRepository;
         private readonly IStatusRepository _statusRepository;
-        private readonly MessageBroker _messageBroker;
+        private readonly MessageProducerService _messageProducerService;
 
         public AudioService(
             IAudioRepository audioRepository,
-            IStatusRepository statusRepository
+            IStatusRepository statusRepository,
+            MessageProducerService messageProducerService
             )
         {
             _audioRepository = audioRepository;
             _statusRepository = statusRepository;
-
-            _messageBroker = new MessageBroker("MetadataQueue", HandleMessage);
+            _messageProducerService = messageProducerService;
         }
-        private void HandleMessage(BrokerMessage message)
+        private async void HandleMessage(BrokerMessage message)
         {
 
             switch (message.Type)
             {
-                case "UserCreated":
+                case "AudioUploaded":
+                    Console.WriteLine("WARD: New AUDIO RECIEVED");
+                    
+                    Status newStatus = await _statusRepository.GetStatusByTitleAsync("READY");
+
+                    int audioId = (int)message.Content.AudioId;
+
+                    await _audioRepository.UpdateStatusAsync(audioId, newStatus);
+                    break;
+
+                case "UpdateStatus":
                     // Handle user creation event
                     break;
-                case "AudioUploaded":
-                    // Handle audio uploaded event
-                    break;
-                    // Add more message types as needed
             }
         }
 
@@ -85,6 +91,7 @@ namespace MetadataService.Service
 
         public async Task<IEnumerable<Audio>> GetAllAudios()
         {
+            SendTestRabbit();
             return await _audioRepository.GetAllAsync();
         }
 
@@ -102,6 +109,29 @@ namespace MetadataService.Service
         public async Task<bool> DeleteAudio(int audioId)
         {
             return await _audioRepository.DeleteAsync(audioId);
+        }
+
+        public void Dispose()
+        {
+            _messageProducerService?.Dispose();
+        }
+
+        private void SendTestRabbit()
+        {
+
+            Console.WriteLine($"TEST - Sending to RabbitMQ!");
+            BrokerMessage message = new();
+
+            message.Type = "TEST";
+            message.Content = new
+            {
+                trial = "NONE"
+            };
+
+            _messageProducerService.Publish("MetadataQueue", message);
+
+            Console.WriteLine($"TEST - Message sent to RabbitMQ: {message}");
+
         }
     }
 }

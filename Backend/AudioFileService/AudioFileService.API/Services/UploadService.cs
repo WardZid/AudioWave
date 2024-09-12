@@ -7,32 +7,14 @@ using System.Reflection;
 
 namespace AudioFileService.API.Services
 {
-    public class UploadService: IUploadService
+    public class UploadService(
+            IAmazonS3 s3Client,
+            MessageProducerService messageProducerService
+        ) : IUploadService, IDisposable
     {
-        private readonly IAmazonS3 _s3Client;
-        private readonly MessageBroker _messageBroker;
 
-        public UploadService(IAmazonS3 s3Client)
-        {
-            _s3Client = s3Client;
-
-            _messageBroker = new MessageBroker("UploadQueue", HandleMessage);
-
-        }
-        private void HandleMessage(BrokerMessage message)
-        {
-
-            switch (message.Type)
-            {
-                case "UserCreated":
-                    // Handle user creation event
-                    break;
-                case "AudioUploaded":
-                    // Handle audio uploaded event
-                    break;
-                    // Add more message types as needed
-            }
-        }
+        private readonly IAmazonS3 _s3Client = s3Client;
+        private readonly MessageProducerService _messageProducerService = messageProducerService;
 
         private readonly List<string> allowedAudioMimeTypes = new List<string>
         {
@@ -70,9 +52,27 @@ namespace AudioFileService.API.Services
             if (uploadChunkDto.ChunkNumber == uploadChunkDto.TotalChunks)
             {
 
+                Console.WriteLine($"Sending to RabbitMQ!");
+
+                BrokerMessage message = new();
+
+                message.Type = "AudioUploaded";
+                message.Content = new
+                {
+                    AudioId = uploadChunkDto.AudioId
+                };
+
+                _messageProducerService.Publish("MetadataQueue", message);
+
+                Console.WriteLine($"Message sent to RabbitMQ: {message}");
             }
 
             return s3ChunkKey;
+        }
+
+        public void Dispose()
+        {
+            _messageProducerService?.Dispose();
         }
     }
 }

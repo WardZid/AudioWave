@@ -8,6 +8,6 @@ namespace AudioWaveBroker;
 
 public class BrokerMessage
 {
-    public required string Type { get; set; }
-    public required string Content { get; set; }
+    public string Type { get; set; } = "";
+    public dynamic Content { get; set; } = "";
 }

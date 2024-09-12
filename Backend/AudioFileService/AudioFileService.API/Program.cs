@@ -1,6 +1,7 @@
 using Amazon.S3;
 using AudioFileService.API.Services;
 using AudioFileService.API.Services.IServices;
+using AudioWaveBroker;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -17,6 +18,10 @@ builder.Services.AddSwaggerGen();
 // Services
 builder.Services.AddScoped<IUploadService, UploadService>();
 builder.Services.AddScoped<IPlaybackService, PlaybackService>();
+
+builder.Services.AddHostedService<MessageConsumerService>(); //for rabbitmq
+builder.Services.AddTransient<MessageProducerService>();    //for rabbitmq
+builder.Services.AddSingleton<IMessageHandler, AudioFileMessageHandler>();
 
 // AWS config
 builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());

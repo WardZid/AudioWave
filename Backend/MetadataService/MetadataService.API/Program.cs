@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using AudioWaveBroker;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,11 @@ builder.Services.AddSwaggerGen();
 
 //Services
 builder.Services.AddScoped<IAudioService, AudioService>();
+
+//  Services for RabbitMQ
+builder.Services.AddHostedService<MessageConsumerService>();
+builder.Services.AddTransient<MessageProducerService>();
+builder.Services.AddSingleton<IMessageHandler, MetadataMessageHandler>();
 
 //Repositories
 builder.Services.AddScoped<IAudioRepository, AudioRepository>();
