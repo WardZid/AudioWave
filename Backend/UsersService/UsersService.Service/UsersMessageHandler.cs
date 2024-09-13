@@ -13,7 +13,7 @@ public class UsersMessageHandler(
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
-    public Task HandleMessage(BrokerMessage brokerMessage)
+    public async Task<bool> HandleMessage(BrokerMessage brokerMessage)
     {
         Console.WriteLine($"Processing message: {brokerMessage}");
 
@@ -28,8 +28,8 @@ public class UsersMessageHandler(
                 //    // Use myScopedService here
                 //}
                 Console.WriteLine("USERS RECIEVED MESSAGE");
-                break;
+                return true;
         }
-        return Task.CompletedTask;
+        return false;
     }
 }

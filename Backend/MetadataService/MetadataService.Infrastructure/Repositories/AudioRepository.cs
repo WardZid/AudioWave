@@ -27,12 +27,17 @@ namespace MetadataService.Infrastructure.Repositories
             return entity;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id, int userId)
         {
             var entity = await GetByIdAsync(id);
             if (entity == null)
             {
                 return false;
+            }
+
+            if (entity.UploaderId != userId)
+            {
+                throw new UnauthorizedAccessException("You are not authorized to update this audio.");
             }
 
             _context.Set<Audio>().Remove(entity);
@@ -50,8 +55,13 @@ namespace MetadataService.Infrastructure.Repositories
             return await _context.Set<Audio>().FindAsync(id);
         }
 
-        public async Task<Audio> UpdateAsync(Audio entity)
+        public async Task<Audio> UpdateAsync(Audio entity, int userId)
         {
+            if (entity.UploaderId != userId)
+            {
+                throw new UnauthorizedAccessException("You are not authorized to update this audio.");
+            }
+
             _context.Set<Audio>().Update(entity);
             await _context.SaveChangesAsync();
             return entity;
@@ -71,18 +81,23 @@ namespace MetadataService.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateStatusAsync(int audioId,Status status)
-        {
-            Audio? audio = await _context.Audios.FindAsync(audioId);
+        //public async Task UpdateStatusAsync(int audioId, int  userId, Status status)
+        //{
+        //    Audio? audio = await _context.Audios.FindAsync(audioId);
 
-            if (audio == null)
-            {
-                throw new KeyNotFoundException("Audio not found.");
-            }
+        //    if (audio == null)
+        //    {
+        //        throw new KeyNotFoundException("Audio not found.");
+        //    }
 
-            audio.Status = status;
+        //    if (audio.UploaderId != userId)
+        //    {
+        //        throw new UnauthorizedAccessException("You are not authorized to update this audio.");
+        //    }
 
-            await _context.SaveChangesAsync();
-        }
+        //    audio.Status = status;
+
+        //    await _context.SaveChangesAsync();
+        //}
     }
 }

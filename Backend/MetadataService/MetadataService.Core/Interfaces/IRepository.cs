@@ -11,7 +11,7 @@ namespace MetadataService.Core.Interfaces
         Task<T?> GetByIdAsync(int id);
         Task<IEnumerable<T>> GetAllAsync();
         Task<T> AddAsync(T entity);
-        Task<T> UpdateAsync(T entity);
-        Task<bool> DeleteAsync(int id);
+        Task<T> UpdateAsync(T entity, int userId);
+        Task<bool> DeleteAsync(int id, int userId);
     }
 }

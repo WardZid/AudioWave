@@ -13,7 +13,7 @@ public class AudioFileMessageHandler(
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
-    public Task HandleMessage(BrokerMessage brokerMessage)
+    public async Task<bool> HandleMessage(BrokerMessage brokerMessage)
     {
         Console.WriteLine($"Processing message: {brokerMessage}");
         
@@ -28,8 +28,8 @@ public class AudioFileMessageHandler(
                 //    // Use myScopedService here
                 //}
                 Console.WriteLine("AUDIOFILE RECIEVED MESSAGE");
-                break;
+                return true;
         }
-        return Task.CompletedTask;
+        return false;
     }
 }

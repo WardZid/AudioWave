@@ -14,7 +14,8 @@ namespace MetadataService.Service.IServices
         Task<Audio?> GetAudioForListen(int audioId);
         Task<IEnumerable<Audio>> GetAllAudios();
         Task<int> AddAudio(AddAudioDto audioDto, int uploaderId);
-        Task<Audio?> UpdateAudio(Audio audio);
-        Task<bool> DeleteAudio(int audioId);
+        Task<Audio?> UpdateAudio(Audio audio, int userId);
+        Task<bool> DeleteAudio(int audioId, int userId);
+        Task<bool> UpdateAudioStatus(int audioId, int userId, string statusName);
     }
 }

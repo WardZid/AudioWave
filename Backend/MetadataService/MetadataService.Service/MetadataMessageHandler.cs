@@ -1,8 +1,13 @@
 ﻿using AudioWaveBroker;
+using MetadataService.Core.DTOs;
+using MetadataService.Infrastructure.Models;
+using MetadataService.Service.IServices;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace MetadataService.Service;
@@ -13,23 +18,24 @@ public class MetadataMessageHandler(
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
-    public Task HandleMessage(BrokerMessage brokerMessage)
+    public async Task<bool> HandleMessage(BrokerMessage brokerMessage)
     {
         Console.WriteLine($"Processing message: {brokerMessage}");
-        
+
         switch (brokerMessage.Type)
         {
             case "AudioUploaded":
-                //something happens
-                // Example of resolving a scoped service
-                //using (var scope = _serviceProvider.CreateScope())
-                //{
-                //    var myScopedService = scope.ServiceProvider.GetRequiredService<IMyScopedService>();
-                //    // Use myScopedService here
-                //}
                 Console.WriteLine("METADATA RECIEVED MESSAGE");
-                break;
+
+                var myScopedService = _serviceProvider.GetRequiredService<IAudioService>();
+
+                AudioUploadedDto dto = JsonSerializer.Deserialize<AudioUploadedDto>(brokerMessage.SerializedContent);
+
+                bool success = await myScopedService.UpdateAudioStatus(dto.AudioId, dto.UserId, "READY");
+
+                Console.WriteLine($"METADATA updating status: {success}");
+                return true;
         }
-        return Task.CompletedTask;
+        return false;
     }
 }

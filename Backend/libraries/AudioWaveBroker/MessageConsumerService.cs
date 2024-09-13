@@ -61,16 +61,18 @@ public class MessageConsumerService : IHostedService, IDisposable
     public Task StartAsync(CancellationToken cancellationToken)
     {
         var consumer = new EventingBasicConsumer(_channel);
-        consumer.Received += (model, ea) =>
+        consumer.Received += async (model, ea) =>
         {
             var body = ea.Body.ToArray();
             var message = Encoding.UTF8.GetString(body);
             Console.WriteLine($"Received message: {message}");
 
             BrokerMessage deserializedMessage = JsonSerializer.Deserialize<BrokerMessage>(message);
-            _messageHandler.HandleMessage(deserializedMessage);
+            bool success = await _messageHandler.HandleMessage(deserializedMessage);
+
 
             _channel.BasicAck(ea.DeliveryTag, false);
+            Console.WriteLine($"Message Processing {(success ? "Success" : "Failure")} - ACK Delivered");
         };
 
         var queueName = _configuration["RabbitMQ:ConsumerQueue"];

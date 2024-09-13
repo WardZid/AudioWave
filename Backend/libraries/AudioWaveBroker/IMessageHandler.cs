@@ -8,6 +8,6 @@ namespace AudioWaveBroker
 {
     public interface IMessageHandler
     {
-        Task HandleMessage(BrokerMessage brokerMessage);
+        Task<bool> HandleMessage(BrokerMessage brokerMessage);
     }
 }

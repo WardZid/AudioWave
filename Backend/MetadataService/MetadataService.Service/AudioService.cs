@@ -29,25 +29,10 @@ namespace MetadataService.Service
             _statusRepository = statusRepository;
             _messageProducerService = messageProducerService;
         }
-        private async void HandleMessage(BrokerMessage message)
+
+        public void Dispose()
         {
-
-            switch (message.Type)
-            {
-                case "AudioUploaded":
-                    Console.WriteLine("WARD: New AUDIO RECIEVED");
-                    
-                    Status newStatus = await _statusRepository.GetStatusByTitleAsync("READY");
-
-                    int audioId = (int)message.Content.AudioId;
-
-                    await _audioRepository.UpdateStatusAsync(audioId, newStatus);
-                    break;
-
-                case "UpdateStatus":
-                    // Handle user creation event
-                    break;
-            }
+            _messageProducerService?.Dispose();
         }
 
         public async Task<int> AddAudio(AddAudioDto audioDto, int uploaderId)
@@ -80,7 +65,6 @@ namespace MetadataService.Service
             return await _audioRepository.GetByIdAsync(audioId);
         }
 
-
         public async Task<Audio?> GetAudioForListen(int audioId)
         {
             // Increment listen count
@@ -91,11 +75,10 @@ namespace MetadataService.Service
 
         public async Task<IEnumerable<Audio>> GetAllAudios()
         {
-            SendTestRabbit();
             return await _audioRepository.GetAllAsync();
         }
 
-        public async Task<Audio?> UpdateAudio(Audio audio)
+        public async Task<Audio?> UpdateAudio(Audio audio, int userId)
         {
             var existingAudio = await _audioRepository.GetByIdAsync(audio.Id);
             if (existingAudio == null)
@@ -103,35 +86,29 @@ namespace MetadataService.Service
                 return null;
             }
 
-            return await _audioRepository.UpdateAsync(audio);
+            return await _audioRepository.UpdateAsync(audio, userId);
         }
 
-        public async Task<bool> DeleteAudio(int audioId)
+        public async Task<bool> DeleteAudio(int audioId,int userId)
         {
-            return await _audioRepository.DeleteAsync(audioId);
+            return await _audioRepository.DeleteAsync(audioId, userId);
         }
 
-        public void Dispose()
+        public async Task<bool> UpdateAudioStatus(int audioId, int userId, string statusName)
         {
-            _messageProducerService?.Dispose();
-        }
+            Status newStatus = await _statusRepository.GetStatusByTitleAsync(statusName); // Example: "READY"
 
-        private void SendTestRabbit()
-        {
+            //int audioId = (int)message.Content.AudioId;
+            Audio audio = await _audioRepository.GetByIdAsync(audioId);
 
-            Console.WriteLine($"TEST - Sending to RabbitMQ!");
-            BrokerMessage message = new();
-
-            message.Type = "TEST";
-            message.Content = new
+            if (audio == null)
             {
-                trial = "NONE"
-            };
+                return false;
+            }
+            audio.StatusId = newStatus.Id;
 
-            _messageProducerService.Publish("MetadataQueue", message);
-
-            Console.WriteLine($"TEST - Message sent to RabbitMQ: {message}");
-
+            Audio resultAudio = await _audioRepository.UpdateAsync(audio, userId);
+            return resultAudio.StatusId == newStatus.Id;
         }
     }
 }

@@ -89,7 +89,7 @@ namespace MetadataService.API.Controllers
 
                 if (audioId == 0)
                 {
-                    return StatusCode(500);
+                    return StatusCode(500,"Error audio 0");
                 }
                 return CreatedAtAction(nameof(GetAudio), new { id = audioId }, audioId);
             }
@@ -118,7 +118,15 @@ namespace MetadataService.API.Controllers
                 return BadRequest();
             }
 
-            var updatedAudio = await _audioService.UpdateAudio(audio);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User ID not found in token.");
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            var updatedAudio = await _audioService.UpdateAudio(audio, userId);
             if (updatedAudio == null)
             {
                 return NotFound();
@@ -131,7 +139,15 @@ namespace MetadataService.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAudio(int id)
         {
-            var success = await _audioService.DeleteAudio(id);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User ID not found in token.");
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            var success = await _audioService.DeleteAudio(id, userId);
             if (success == false)
             {
                 return NotFound();

@@ -9,5 +9,5 @@ namespace AudioWaveBroker;
 public class BrokerMessage
 {
     public string Type { get; set; } = "";
-    public dynamic Content { get; set; } = "";
+    public string SerializedContent { get; set; } = "";
 }

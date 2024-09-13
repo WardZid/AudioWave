@@ -4,6 +4,7 @@ using AudioFileService.API.DTOs;
 using AudioFileService.API.Services.IServices;
 using AudioWaveBroker;
 using System.Reflection;
+using System.Text.Json;
 
 namespace AudioFileService.API.Services
 {
@@ -56,12 +57,14 @@ namespace AudioFileService.API.Services
 
                 BrokerMessage message = new();
 
-                message.Type = "AudioUploaded";
-                message.Content = new
+                AudioUploadedDto audioUploadedDto = new()
                 {
-                    AudioId = uploadChunkDto.AudioId
+                    AudioId = uploadChunkDto.AudioId,
+                    UserId = uploaderId
                 };
 
+                message.Type = "AudioUploaded";
+                message.SerializedContent = JsonSerializer.Serialize(audioUploadedDto);
                 _messageProducerService.Publish("MetadataQueue", message);
 
                 Console.WriteLine($"Message sent to RabbitMQ: {message}");

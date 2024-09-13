@@ -11,6 +11,6 @@ namespace MetadataService.Infrastructure.IRepositories
     public interface IAudioRepository : IRepository<Audio>
     {
         Task AddListenAsync(int audioId);
-        Task UpdateStatusAsync(int audioId, Status status);
+        //Task UpdateStatusAsync(int audioId, int userId, Status status);
     }
 }

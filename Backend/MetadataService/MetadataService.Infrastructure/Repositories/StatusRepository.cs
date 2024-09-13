@@ -21,11 +21,6 @@ namespace MetadataService.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<bool> DeleteAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<IEnumerable<Status>> GetAllAsync()
         {
             return await _context.Statuses.ToListAsync();
@@ -42,9 +37,15 @@ namespace MetadataService.Infrastructure.Repositories
             return await _context.Statuses
                                  .FirstOrDefaultAsync(status => status.Status1.ToUpper() == title.ToUpper());
 
+
         }
 
-        public Task<Status> UpdateAsync(Status entity)
+        public Task<Status> UpdateAsync(Status entity, int userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> DeleteAsync(int id, int userId)
         {
             throw new NotImplementedException();
         }
