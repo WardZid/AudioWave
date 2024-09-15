@@ -83,7 +83,6 @@ namespace MetadataService.API.Controllers
                 return BadRequest();
             }
 
-
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null)
             {

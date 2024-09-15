@@ -24,5 +24,6 @@ namespace MetadataService.Core.DTOs
 
         public int? VisibilityId { get; set; }
 
+        public string[]? Tags { get; set; }
     }
 }

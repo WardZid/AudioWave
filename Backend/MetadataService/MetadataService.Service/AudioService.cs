@@ -41,6 +41,17 @@ namespace MetadataService.Service
         public async Task<int> AddAudio(AddAudioDto audioDto, int uploaderId)
         {
             Status uploadingStatus = await _statusRepository.GetStatusByTitleAsync("UPLOADING");
+
+
+            var tagsNoDupes = audioDto.Tags != null ? new HashSet<string>(audioDto.Tags) : new HashSet<string>();
+
+            List<Tag> tags = tagsNoDupes.Select(tagString => new Tag
+            {
+                Tag1 = tagString
+
+            })
+                .ToList();
+
             var audio = new Audio
             {
                 Title = audioDto.Title,
@@ -54,8 +65,8 @@ namespace MetadataService.Service
                 StatusId = uploadingStatus.Id,
                 Listens = 0,
                 UploadedAt = DateTime.Now,
-                UploaderId = uploaderId
-
+                UploaderId = uploaderId,
+                Tags = tags
             };
 
             var addedAudio = await _audioRepository.AddAsync(audio);
