@@ -170,7 +170,7 @@ namespace MetadataService.API.Controllers
         {
             try
             {
-                var statuses = await statusService.GetStatuses();
+                var statuses = await _statusService.GetStatuses();
 
                 return Ok(statuses);
             }
