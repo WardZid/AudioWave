@@ -3,7 +3,7 @@ import 'package:audiowave6/Helpers/GeneralHelpers/SizedBoxes.dart';
 import 'package:audiowave6/Helpers/GeneralHelpers/TextBox.dart';
 import 'package:flutter/material.dart';
 //import 'package:audiowave6/lib/Registery/Signin.dart';
-import '../Helpers/GeneralHelpers/BackGround.dart';
+import 'Helpers/GeneralHelpers/BackGround.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -38,7 +38,7 @@ class _RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //appBar: AppBarC(context, 'Register', 30),
+      appBar: AppBarC(context, 'Register', 30),
       body: Stack(
         children: [
           BG1(),

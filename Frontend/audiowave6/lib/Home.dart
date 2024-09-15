@@ -1,7 +1,7 @@
 import 'Helpers/GeneralHelpers/AppBar.dart';
 import 'Helpers/GeneralHelpers/BackGround.dart';
 import 'Helpers/GeneralHelpers/SizedBoxes.dart';
-import 'Registery/Register.dart';
+import 'Register.dart';
 import 'main.dart';
 import 'package:flutter/material.dart';
 
