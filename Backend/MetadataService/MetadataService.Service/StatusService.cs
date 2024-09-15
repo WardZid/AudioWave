@@ -15,7 +15,7 @@ public class StatusService(
 {
     private readonly IStatusRepository _statusRepository = statusRepository;
 
-    public async Task<IEnumerable<Status>> GetStatuses()
+    public async Task<IEnumerable<Status>> GetStatusesAsync()
     {
         return await _statusRepository.GetAllAsync();
     }

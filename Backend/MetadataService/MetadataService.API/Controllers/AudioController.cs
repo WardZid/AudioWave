@@ -13,12 +13,13 @@ namespace MetadataService.API.Controllers
     [ApiController]
     public class AudioController(
         IAudioService audioService,
-        IStatusService statusService
+        IStatusService statusService,
+        IVisibilityService visibilityService
         ) : ControllerBase
     {
         private readonly IAudioService _audioService = audioService;
         private readonly IStatusService _statusService = statusService;
-
+        private readonly IVisibilityService _visibilityService = visibilityService;
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Audio>> GetAudio([Required] int id)
@@ -169,7 +170,22 @@ namespace MetadataService.API.Controllers
         {
             try
             {
-                var statuses = await _statusService.GetStatuses();
+                var statuses = await _statusService.GetStatusesAsync();
+
+                return Ok(statuses);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetVisibilities")]
+        public async Task<IActionResult> GetVisibilities()
+        {
+            try
+            {
+                var statuses = await _visibilityService.GetVisibilitiesAsync();
 
                 return Ok(statuses);
             }

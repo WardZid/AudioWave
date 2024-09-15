@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
+using MetadataService.Infrastructure.Repositories;
 
 namespace MetadataService.Service
 {
@@ -18,18 +19,21 @@ namespace MetadataService.Service
         private readonly IAudioRepository _audioRepository;
         private readonly IStatusRepository _statusRepository;
         private readonly IListenRepository _listenRepository;
+        private readonly IVisibilityRepository _visibilityRepository;
         private readonly MessageProducerService _messageProducerService;
 
         public AudioService(
             IAudioRepository audioRepository,
             IStatusRepository statusRepository,
             IListenRepository listenRepository,
+            IVisibilityRepository visibilityRepository,
             MessageProducerService messageProducerService
             )
         {
             _audioRepository = audioRepository;
             _statusRepository = statusRepository;
             _listenRepository = listenRepository;
+            _visibilityRepository = visibilityRepository;
             _messageProducerService = messageProducerService;
         }
 
@@ -89,7 +93,12 @@ namespace MetadataService.Service
                 await _listenRepository.AddAsync(audioId, userId);
             }
 
-            return await _audioRepository.GetByIdAsync(audioId);
+            Audio? audio = await _audioRepository.GetByIdAsync(audioId);
+
+            if (audio != null) {
+                
+            }
+            return audio;
         }
 
         public async Task<IEnumerable<Audio>> GetAllAudios()

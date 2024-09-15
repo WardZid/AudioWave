@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace MetadataService.Service.IServices
 {
-    public interface IStatusService
+    public interface IVisibilityService
     {
-        Task<IEnumerable<Status>> GetStatusesAsync();
+        Task<IEnumerable<Visibility>> GetVisibilitiesAsync();
     }
 }
