@@ -31,7 +31,11 @@ public partial class Audio
 
     public int? UploaderId { get; set; }
 
+    public virtual ICollection<Listen> ListensNavigation { get; set; } = new List<Listen>();
+
     public virtual Status? Status { get; set; }
+
+    public virtual ICollection<Tag> Tags { get; set; } = new List<Tag>();
 
     public virtual Visibility? Visibility { get; set; }
 }

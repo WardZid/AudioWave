@@ -23,5 +23,6 @@ namespace MetadataService.Core.DTOs
         public byte[]? FileChecksum { get; set; }
 
         public int? VisibilityId { get; set; }
+
     }
 }

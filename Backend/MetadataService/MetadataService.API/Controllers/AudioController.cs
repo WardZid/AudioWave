@@ -12,10 +12,12 @@ namespace MetadataService.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class AudioController(
-        IAudioService audioService
+        IAudioService audioService,
+        IStatusService statusService
         ) : ControllerBase
     {
         private readonly IAudioService _audioService = audioService;
+        private readonly IStatusService _statusService = statusService;
 
 
         [HttpGet("{id}")]
@@ -153,6 +155,21 @@ namespace MetadataService.API.Controllers
                 return NotFound();
             }
             return Ok("Audio deleted Successfully");
+        }
+
+        [HttpGet("GetStatuses")]
+        public async Task<IActionResult> GetStatuses()
+        {
+            try
+            {
+                var statuses = await statusService.GetStatuses();
+
+                return Ok(statuses);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
