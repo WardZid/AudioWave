@@ -17,16 +17,19 @@ namespace MetadataService.Service
     {
         private readonly IAudioRepository _audioRepository;
         private readonly IStatusRepository _statusRepository;
+        private readonly IListenRepository _listenRepository;
         private readonly MessageProducerService _messageProducerService;
 
         public AudioService(
             IAudioRepository audioRepository,
             IStatusRepository statusRepository,
+            IListenRepository listenRepository,
             MessageProducerService messageProducerService
             )
         {
             _audioRepository = audioRepository;
             _statusRepository = statusRepository;
+            _listenRepository = listenRepository;
             _messageProducerService = messageProducerService;
         }
 
@@ -65,10 +68,15 @@ namespace MetadataService.Service
             return await _audioRepository.GetByIdAsync(audioId);
         }
 
-        public async Task<Audio?> GetAudioForListen(int audioId)
+        public async Task<Audio?> GetAudioForListen(int audioId, int userId)
         {
             // Increment listen count
             await _audioRepository.AddListenAsync(audioId);
+
+            if (userId > 0)
+            {
+                await _listenRepository.AddAsync(audioId, userId);
+            }
 
             return await _audioRepository.GetByIdAsync(audioId);
         }

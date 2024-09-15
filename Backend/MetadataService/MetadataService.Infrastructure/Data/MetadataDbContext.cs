@@ -54,9 +54,7 @@ public partial class MetadataDbContext : DbContext
 
         modelBuilder.Entity<Listen>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Listens__3214EC076C1D80BC");
-
-            entity.HasIndex(e => new { e.AudioId, e.UserId }, "UQ_Listens_AudioId_UserId").IsUnique();
+            entity.HasKey(e => e.Id).HasName("PK__Listens__3214EC0733D93F20");
 
             entity.Property(e => e.ListenedAt)
                 .HasDefaultValueSql("(getdate())")

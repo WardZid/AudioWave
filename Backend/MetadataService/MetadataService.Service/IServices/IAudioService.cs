@@ -11,7 +11,7 @@ namespace MetadataService.Service.IServices
     public interface IAudioService
     {
         Task<Audio?> GetAudioById(int audioId);
-        Task<Audio?> GetAudioForListen(int audioId);
+        Task<Audio?> GetAudioForListen(int audioId, int userId);
         Task<IEnumerable<Audio>> GetAllAudios();
         Task<int> AddAudio(AddAudioDto audioDto, int uploaderId);
         Task<Audio?> UpdateAudio(Audio audio, int userId);

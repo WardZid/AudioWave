@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace MetadataService.Infrastructure.Models;
 
@@ -31,11 +32,15 @@ public partial class Audio
 
     public int? UploaderId { get; set; }
 
+    [JsonIgnore]
     public virtual ICollection<Listen> ListensNavigation { get; set; } = new List<Listen>();
 
+    [JsonIgnore]
     public virtual Status? Status { get; set; }
 
+    [JsonIgnore]
     public virtual ICollection<Tag> Tags { get; set; } = new List<Tag>();
 
+    [JsonIgnore]
     public virtual Visibility? Visibility { get; set; }
 }

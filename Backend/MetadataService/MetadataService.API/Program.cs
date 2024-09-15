@@ -20,15 +20,21 @@ builder.Services.AddSwaggerGen();
 
 //Services
 builder.Services.AddScoped<IAudioService, AudioService>();
+builder.Services.AddScoped<IStatusService, StatusService>();
 
 //  Services for RabbitMQ
-builder.Services.AddHostedService<MessageConsumerService>();
 builder.Services.AddTransient<MessageProducerService>();
-builder.Services.AddSingleton<IMessageHandler, MetadataMessageHandler>();
+if (!builder.Environment.IsDevelopment()) // Only in non-development environments 
+{
+    builder.Services.AddHostedService<MessageConsumerService>();
+    builder.Services.AddSingleton<IMessageHandler, MetadataMessageHandler>();
+}
+
 
 //Repositories
 builder.Services.AddScoped<IAudioRepository, AudioRepository>();
 builder.Services.AddScoped<IStatusRepository, StatusRepository>();
+builder.Services.AddScoped<IListenRepository, ListenRepository>();
 
 
 // Access SQL password from environment variable
