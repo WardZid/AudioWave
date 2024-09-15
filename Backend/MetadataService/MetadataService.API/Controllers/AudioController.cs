@@ -26,7 +26,15 @@ namespace MetadataService.API.Controllers
         {
             try
             {
-                var audio = await _audioService.GetAudioById(id);
+                int userId = -1;
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim != null)
+                {
+                    userId = int.Parse(userIdClaim.Value);
+                }
+
+                var audio = await _audioService.GetAudioById(id, userId);
 
                 return Ok(audio);
             }

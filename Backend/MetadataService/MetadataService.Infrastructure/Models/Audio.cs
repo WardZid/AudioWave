@@ -26,7 +26,7 @@ public partial class Audio
 
     public int? StatusId { get; set; }
 
-    public int? VisibilityId { get; set; }
+    public int VisibilityId { get; set; }
 
     public DateTime? UploadedAt { get; set; }
 

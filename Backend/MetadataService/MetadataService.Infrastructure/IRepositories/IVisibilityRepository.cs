@@ -10,5 +10,6 @@ namespace MetadataService.Infrastructure.IRepositories
 {
     public interface IVisibilityRepository : IRepository<Visibility>
     {
+        Task<Visibility> GetByTitleAsync(string title);
     }
 }

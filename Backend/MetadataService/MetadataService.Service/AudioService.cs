@@ -65,7 +65,7 @@ namespace MetadataService.Service
                 FileSize = audioDto.FileSize,
                 FileType = audioDto.FileType,
                 FileChecksum = audioDto.FileChecksum,
-                VisibilityId = audioDto.VisibilityId,
+                VisibilityId = audioDto.VisibilityId ?? (await _visibilityRepository.GetByTitleAsync("Private")).Id, // if null get the id of the private visibility
                 StatusId = uploadingStatus.Id,
                 Listens = 0,
                 UploadedAt = DateTime.Now,
@@ -78,13 +78,50 @@ namespace MetadataService.Service
             return addedAudio.Id;
         }
 
-        public async Task<Audio?> GetAudioById(int audioId)
+        public async Task<Audio?> GetAudioById(int audioId, int userId)
         {
-            return await _audioRepository.GetByIdAsync(audioId);
+            Audio? audio = await _audioRepository.GetByIdAsync(audioId);
+
+            if (audio == null)
+            {
+                throw new KeyNotFoundException();
+            }
+
+            Visibility? visibility = await _visibilityRepository.GetByIdAsync(audio.VisibilityId);
+            if (visibility == null)
+            {
+                throw new KeyNotFoundException();
+            }
+
+            if (visibility.Visibility1 == "Private" && audio.UploaderId != userId)
+            {
+                throw new KeyNotFoundException();
+            }
+            return audio;
         }
 
         public async Task<Audio?> GetAudioForListen(int audioId, int userId)
         {
+
+            Audio? audio = await _audioRepository.GetByIdAsync(audioId);
+
+            if (audio == null)
+            {
+                throw new KeyNotFoundException();
+            }
+
+            Visibility? visibility = await _visibilityRepository.GetByIdAsync(audio.VisibilityId);
+            if (visibility == null)
+            {
+                throw new KeyNotFoundException();
+            }
+
+            if (visibility.Visibility1 == "Private" && audio.UploaderId != userId)
+            {
+                throw new KeyNotFoundException();
+            }
+
+
             // Increment listen count
             await _audioRepository.AddListenAsync(audioId);
 
@@ -93,11 +130,7 @@ namespace MetadataService.Service
                 await _listenRepository.AddAsync(audioId, userId);
             }
 
-            Audio? audio = await _audioRepository.GetByIdAsync(audioId);
 
-            if (audio != null) {
-                
-            }
             return audio;
         }
 
@@ -117,7 +150,7 @@ namespace MetadataService.Service
             return await _audioRepository.UpdateAsync(audio, userId);
         }
 
-        public async Task<bool> DeleteAudio(int audioId,int userId)
+        public async Task<bool> DeleteAudio(int audioId, int userId)
         {
             return await _audioRepository.DeleteAsync(audioId, userId);
         }

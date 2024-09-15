@@ -37,6 +37,12 @@ public class VisibilityRepository(
         return await _context.Visibilities.FindAsync(id);
     }
 
+    public async Task<Visibility> GetByTitleAsync(string title)
+    {
+        return await _context.Visibilities
+                             .FirstOrDefaultAsync(visibility => visibility.Visibility1.ToUpper() == title.ToUpper());
+    }
+
     public Task<Visibility> UpdateAsync(Visibility entity, int userId)
     {
         throw new NotImplementedException();
