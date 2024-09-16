@@ -99,12 +99,12 @@ class AuthRepositoryImpl implements AuthRepository {
       "lastName": lastName,
     };
     final dtoString = jsonEncode(dto);
-    final encryptedDto = encryptData(dtoString, publicKey);
+    // final encryptedDto = encryptData(dtoString, publicKey);
 
     final response = await client.post(
       Uri.parse(Endpoints.registerUrl),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(encryptedDto),
+      body: dtoString, //jsonEncode(encryptedDto),
     );
 
     if (response.statusCode == 200) {
