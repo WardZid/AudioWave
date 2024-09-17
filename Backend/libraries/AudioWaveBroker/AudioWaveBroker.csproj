@@ -8,6 +8,7 @@
 		xcopy /q /y "$(TargetDir)AudioWaveBroker.dll" "..\..\..\..\..\AudioFileService\libs\"
 		xcopy /q /y "$(TargetDir)AudioWaveBroker.dll" "..\..\..\..\..\MetadataService\libs\"
 		xcopy /q /y "$(TargetDir)AudioWaveBroker.dll" "..\..\..\..\..\UsersService\libs\"
+		xcopy /q /y "$(TargetDir)AudioWaveBroker.dll" "..\..\..\..\..\PlaylistService\libs\"
 	</PostBuildEvent>
   </PropertyGroup>
 
