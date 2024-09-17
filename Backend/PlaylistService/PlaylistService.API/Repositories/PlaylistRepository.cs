@@ -1,7 +1,6 @@
 ﻿using MongoDB.Driver;
 using PlaylistService.API.Models;
 using PlaylistService.API.Services;
-using PlaylistService.API.Settings;
 
 namespace PlaylistService.API.Repositories
 {
@@ -32,5 +31,6 @@ namespace PlaylistService.API.Repositories
 
         public async Task DeleteAsync(string id, int userId) =>
             await _playlists.DeleteOneAsync(playlist => playlist.Id == id && playlist.UserId == userId);
+
     }
 }

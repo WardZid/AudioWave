@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using PlaylistService.API.Repositories;
 using PlaylistService.API.Services;
-using PlaylistService.API.Settings;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);

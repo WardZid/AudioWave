@@ -18,9 +18,15 @@ namespace PlaylistService.API.Services
             return await _playlistRepository.GetAllAsync();
         }
 
-        public async Task<Playlist> GetByIdAsync(string id)
+        public async Task<Playlist> GetByIdAsync(string playlistId, int userId)
         {
-            return await _playlistRepository.GetByIdAsync(id);
+            Playlist playlist = await _playlistRepository.GetByIdAsync(playlistId);
+
+            if (playlist.AccessLevel == AccessLevel.Private && playlist.UserId != userId)
+            {
+                throw new KeyNotFoundException();
+            }
+            return playlist;
         }
         public async Task<IEnumerable<Playlist>> GetByUploaderIdAsync(int uploaderId, int userId)
         {
@@ -29,7 +35,7 @@ namespace PlaylistService.API.Services
             if(uploaderId != userId)
             {
                 //filter playlists
-                playlists = playlists.Where(p => p.AccessLevel != AccessLevel.Private).ToList();
+                playlists = playlists.Where(p => p.AccessLevel == AccessLevel.Public).ToList();
             }
             return playlists;
         }
@@ -63,7 +69,6 @@ namespace PlaylistService.API.Services
             }
             
             existingPlaylist.PlaylistName = updatePlaylistDto.PlaylistName;
-            existingPlaylist.AudioIds = updatePlaylistDto.AudioIds;
             existingPlaylist.UpdateDate = DateTime.UtcNow;
             existingPlaylist.AccessLevel = updatePlaylistDto.AccessLevel;
             await _playlistRepository.UpdateAsync(existingPlaylist);
@@ -84,13 +89,35 @@ namespace PlaylistService.API.Services
                 throw new UnauthorizedAccessException("Adding to Playlist unauthorized");
             }
 
-            playlist.AudioIds.AddRange(addAudioToPlaylistDto.AudioId);
+
+            playlist.AudioIds.UnionWith(addAudioToPlaylistDto.AudioIds);
             await _playlistRepository.UpdateAsync(playlist);
         }
 
         public async Task RemoveAudioAsync(RemoveAudioDto removeAudioDto, int userId)
         {
-            throw new NotImplementedException();
+            Playlist playlist = await _playlistRepository.GetByIdAsync(removeAudioDto.PlaylistId);
+
+            if (playlist.UserId != userId)
+            {
+                throw new UnauthorizedAccessException("Removing from Playlist unauthorized");
+            }
+
+
+            playlist.AudioIds.ExceptWith(removeAudioDto.AudioIds);
+
+            await _playlistRepository.UpdateAsync(playlist);
         }
+
+        public async Task<IEnumerable<KeyValuePair<string, int>>> GetAccessLevels()
+        {
+            var accessLevels = Enum.GetValues(typeof(AccessLevel))
+                                    .Cast<AccessLevel>()
+                                    .Select(al => new KeyValuePair<string, int>(al.ToString(), (int)al))
+                                    .ToList();
+
+            return accessLevels;
+        }
+
     }
 }

@@ -3,6 +3,6 @@
     public class AddAudioDto
     {
         public string PlaylistId { get; set; }
-        public List<int> AudioId { get; set; }
+        public HashSet<int> AudioIds { get; set; }
     }
 }

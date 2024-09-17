@@ -23,7 +23,7 @@ namespace PlaylistService.API.Models
         public string PlaylistName { get; set; }
 
         [BsonElement("AudioIds")]
-        public List<int> AudioIds { get; set; }
+        public HashSet<int> AudioIds { get; set; }
 
         [BsonElement("CreationDate")]
         public DateTime CreationDate { get; set; }
@@ -31,7 +31,6 @@ namespace PlaylistService.API.Models
         [BsonElement("UpdateDate")]
         public DateTime UpdateDate { get; set; }
 
-        // New Property for Access Level
         [BsonElement("AccessLevel")]
         public AccessLevel AccessLevel { get; set; } = AccessLevel.Private;  // Default to Private
     }

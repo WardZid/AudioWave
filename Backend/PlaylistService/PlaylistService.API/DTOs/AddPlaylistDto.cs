@@ -5,7 +5,7 @@ namespace PlaylistService.API.DTOs
 {
     public class AddPlaylistDto
     {
-        public List<int> AudioIds { get; set; }
+        public HashSet<int> AudioIds { get; set; }
         public string PlaylistName { get; set; }
         public AccessLevel AccessLevel { get; set; } = AccessLevel.Private;  // Default to Private
     }
