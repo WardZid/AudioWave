@@ -1,6 +1,7 @@
 import 'package:audiowave6/data/api/endpoints.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../../utils/storage_utils.dart';
 import '../models/playlist_model.dart';
 import '../../domain/entities/playlist.dart';
 import '../../domain/entities/access_level.dart';
@@ -25,7 +26,14 @@ class PlaylistRepositoryImpl implements PlaylistRepository {
 
   @override
   Future<Playlist> getById(String id) async {
-    final response = await client.get(Uri.parse('$baseUrl/GetById?id=$id'));
+    String? token = await StorageUtils.getToken();
+    final response = await client.get(
+      Uri.parse('$baseUrl/GetById?id=$id'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      );
     if (response.statusCode == 200) {
       return PlaylistModel.fromJson(json.decode(response.body));
     } else {
@@ -35,7 +43,14 @@ class PlaylistRepositoryImpl implements PlaylistRepository {
 
   @override
   Future<Playlist> getByUploaderId(int uploaderId) async {
-    final response = await client.get(Uri.parse('$baseUrl/GetByUploader?UploaderId=$uploaderId'));
+    String? token = await StorageUtils.getToken();
+    final response = await client.get(
+      Uri.parse('$baseUrl/GetByUploader?UploaderId=$uploaderId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      );
     if (response.statusCode == 200) {
       return PlaylistModel.fromJson(json.decode(response.body));
     } else {
@@ -45,9 +60,13 @@ class PlaylistRepositoryImpl implements PlaylistRepository {
 
   @override
   Future<String> createPlaylist(Playlist playlist) async {
+    String? token = await StorageUtils.getToken();
     final response = await client.post(
       Uri.parse('$baseUrl/AddPlaylist'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
       body: json.encode({
         'playlistName': playlist.playlistName,
         'audioIds': playlist.audioIds.toList(),
@@ -63,9 +82,13 @@ class PlaylistRepositoryImpl implements PlaylistRepository {
 
   @override
   Future<void> updatePlaylist(Playlist playlist) async {
+    String? token = await StorageUtils.getToken();
     final response = await client.put(
       Uri.parse('$baseUrl/UpdatePlaylist'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
       body: json.encode({
         'playlistId': playlist.id,
         'playlistName': playlist.playlistName,
@@ -79,9 +102,13 @@ class PlaylistRepositoryImpl implements PlaylistRepository {
 
   @override
   Future<void> deletePlaylist(String playlistId) async {
+    String? token = await StorageUtils.getToken();
     final response = await client.delete(
       Uri.parse('$baseUrl/DeletePlaylist'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
       body: json.encode({'playlistId': playlistId}),
     );
     if (response.statusCode != 204) {
@@ -91,9 +118,13 @@ class PlaylistRepositoryImpl implements PlaylistRepository {
 
   @override
   Future<void> addAudioToPlaylist(String playlistId, List<int> audioIds) async {
+    String? token = await StorageUtils.getToken();
     final response = await client.post(
       Uri.parse('$baseUrl/AddAudio'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
       body: json.encode({
         'playlistId': playlistId,
         'audioIds': audioIds,
@@ -106,9 +137,13 @@ class PlaylistRepositoryImpl implements PlaylistRepository {
 
   @override
   Future<void> removeAudioFromPlaylist(String playlistId, List<int> audioIds) async {
+    String? token = await StorageUtils.getToken();
     final response = await client.post(
       Uri.parse('$baseUrl/RemoveAudio'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
       body: json.encode({
         'playlistId': playlistId,
         'audioIds': audioIds,

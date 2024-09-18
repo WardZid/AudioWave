@@ -1,3 +1,5 @@
+import 'package:audiowave6/data/models/user_model.dart';
+import 'package:audiowave6/domain/entities/user.dart';
 import 'package:audiowave6/utils/storage_utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -11,6 +13,8 @@ class AuthRepositoryImpl implements AuthRepository {
   final http.Client client;
 
   AuthRepositoryImpl(this.client);
+
+  static const String baseUrl = Endpoints.usersAuthUrl;
 
   @override
   Future<bool> isSignedIn() async {
@@ -68,7 +72,9 @@ class AuthRepositoryImpl implements AuthRepository {
       case 200:
         try {
           final token = jsonDecode(response.body)['token'];
+          final userId = jsonDecode(response.body)['userId'];
           await StorageUtils.storeToken(token);
+          await StorageUtils.storeUserId(userId.toString());
           return true;
         } catch (e) {
           print(e.toString());
@@ -84,6 +90,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> signOut() async {
     await StorageUtils.deleteToken();
+    await StorageUtils.deleteUserId();
   }
 
   @override
@@ -141,6 +148,33 @@ class AuthRepositoryImpl implements AuthRepository {
       return jsonDecode(response.body);
     } else {
       throw Exception('Failed to check email');
+    }
+  }
+
+  @override
+  Future<User> getUserInfo(int userId) async {
+    String? token = await StorageUtils.getToken();
+    final response = await client.get(
+      Uri.parse('$baseUrl/user-info?userId=$userId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      try {
+        var body = json.decode(response.body);
+        // print(body);
+        UserModel userModel = await UserModel.fromJson(body);
+        // print(userModel);
+        return userModel;
+      } catch (e) {
+        print(e);
+        throw e;
+      }
+    } else {
+      print("AUTH REPO - Failed to load user");
+      throw Exception('Failed to load user');
     }
   }
 }

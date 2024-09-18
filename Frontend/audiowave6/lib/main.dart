@@ -71,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onItemTapped(int index) async {
     _isSignedIn = await widget.authRepository.isSignedIn();
-    print(_isSignedIn);
+    print('signed in: $_isSignedIn');
     if ((index == 2 || index == 3) && _isSignedIn == false) {
       // If the user is not signed in and tries to access the saved page, show login screen
       final result = await Navigator.push(

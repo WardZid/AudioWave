@@ -2,6 +2,7 @@ import 'package:audiowave6/data/api/endpoints.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../domain/repositories/upload_repository.dart';
+import '../../utils/storage_utils.dart';
 
 class UploadRepositoryImpl implements UploadRepository {
   final http.Client client;
@@ -18,6 +19,7 @@ class UploadRepositoryImpl implements UploadRepository {
     int chunkDurationSecs,
     http.MultipartFile audioChunk,
   ) async {
+    String? token = await StorageUtils.getToken();
     var request = http.MultipartRequest(
       'POST',
       Uri.parse('$baseUrl/Chunk'),
@@ -29,6 +31,10 @@ class UploadRepositoryImpl implements UploadRepository {
     request.fields['chunkDurationSecs'] = chunkDurationSecs.toString();
 
     request.files.add(audioChunk);
+    
+    if (token != null) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
 
     final response = await client.send(request);
 

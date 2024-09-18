@@ -2,6 +2,7 @@ class Endpoints {
   static const String baseUrl = 'http://10.0.0.13/api';
 
   // AuthService Endpoints
+  static const String usersAuthUrl = '$baseUrl/users/auth';
   static const String registerEncryptedUrl = '$baseUrl/users/auth/register-encrypted';
   static const String registerUrl = '$baseUrl/users/auth/register';
   static const String loginEncryptedUrl = '$baseUrl/users/auth/login-encrypted';

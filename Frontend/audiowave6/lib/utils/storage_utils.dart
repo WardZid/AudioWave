@@ -16,4 +16,20 @@ class StorageUtils {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('jwt_token');
   }
+
+  static Future<void> storeUserId(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_id', userId);
+  }
+
+  static Future<String?> getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_id');
+  }
+
+  static Future<void> deleteUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('user_id');
+  }
+
 }

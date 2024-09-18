@@ -6,6 +6,7 @@ abstract class MetadataRepository {
   Future<Audio> getAudio(int id);
   Future<Audio> getAudioForListen(int id);
   Future<List<Audio>> getAllAudios();
+  Future<List<Audio>> getAudiosByUser(int userId);
   Future<int> addAudio(Audio audio);
   Future<Audio> updateAudio(int id, Audio audio);
   Future<bool> deleteAudio(int id);

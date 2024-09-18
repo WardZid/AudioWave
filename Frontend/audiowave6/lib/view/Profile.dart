@@ -1,12 +1,69 @@
-import 'package:audiowave6/view/secondary/AddAudio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../data/repositories/auth_repository_impl.dart';
+import '../data/repositories/metadata_repository_impl.dart';
+import '../domain/entities/audio.dart';
+import '../domain/entities/user.dart';
+import '../utils/storage_utils.dart';
+import '../view/secondary/AddAudio.dart';
+import 'Helpers/audio_card.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   final VoidCallback onLogout;
 
   const ProfilePage({super.key, required this.onLogout});
+
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  late MetadataRepositoryImpl metadataRepository;
+  late AuthRepositoryImpl authRepository;
+  late Future<List<Audio>> audioListFuture;
+  late Future<User?> userInfoFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    metadataRepository = MetadataRepositoryImpl(http.Client());
+    authRepository = AuthRepositoryImpl(http.Client());
+
+    userInfoFuture = fetchUserInfo();
+    audioListFuture = fetchAudioList();
+  }
+
+  Future<List<Audio>> fetchAudioList() async {
+  try {
+    String? userId = await StorageUtils.getUserId();
+    if (userId == null) {
+      throw Exception("User not found");
+    }
+
+    return await metadataRepository.getAudiosByUser(int.parse(userId));
+  } catch (e) {
+    return [];
+  }
+}
+
+
+  Future<User?> fetchUserInfo() async {
+    try {
+      String? userId = await StorageUtils.getUserId();
+      if(userId == null){
+        throw new Exception("user not found");
+      }
+      int parseUserId = int.parse(userId);
+      
+      return await authRepository.getUserInfo(parseUserId);
+
+
+    } catch (e) {
+      print("ERROR");
+      print(e);
+      return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +78,7 @@ class ProfilePage extends StatelessWidget {
                   // Handle edit profile
                   break;
                 case 'log_out':
-                  _logout(context); // Call the logout function
+                  _logout(context);
                   break;
               }
             },
@@ -45,44 +102,57 @@ class ProfilePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                const CircleAvatar(
-                  radius: 50,
-                  backgroundImage: AssetImage('assets/pfp_placeholder.png'),
-                ),
-                const SizedBox(width: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text(
-                      'Username',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            FutureBuilder<User?>(
+              future: userInfoFuture, // Fetch the user info
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError || snapshot.data == null) {
+                  return const Center(child: Text('Failed to load user info'));
+                }
+
+                // If user info is loaded successfully
+                final user = snapshot.data!;
+                return Row(
+                  children: [
+                    const CircleAvatar(
+                      radius: 50,
+                      backgroundImage: AssetImage('assets/pfp_placeholder.png'),
                     ),
-                    SizedBox(height: 4),
-                    Text(
-                      'user@example.com',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                    const SizedBox(width: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          user.username, // Display username
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          user.email, // Display emai;
+                          style: const TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      ],
                     ),
                   ],
-                ),
-              ],
+                );
+              },
             ),
-            const SizedBox(
-                height:
-                    24), // some space between the profile info and the button
+            const SizedBox(height: 24),
 
-            // Add button to upload new audio
+            // button to upload new audio
             SizedBox(
-              width: double.infinity, // Make the button full width
+              width: double.infinity, // full width
               child: ElevatedButton.icon(
                 onPressed: () {
                   showModalBottomSheet(
                     context: context,
-                    isScrollControlled: true, // To allow full-screen if needed
+                    isScrollControlled: true, //allow full-screen if needed
                     builder: (BuildContext context) {
-                      return const AddAudioPage(); // add adio page
+                      return const AddAudioPage(); 
                     },
                   );
                 },
@@ -94,6 +164,44 @@ class ProfilePage extends StatelessWidget {
                 ),
               ),
             ),
+
+            const SizedBox(height: 24),
+
+            // Fetch and display audio list
+            Expanded(
+              child: FutureBuilder<List<Audio>>(
+                future: audioListFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError || snapshot.data == null) {
+                    return const Center(child: Text('Failed to load audios'));
+                  }
+
+                  final audios = snapshot.data!;
+                  if (audios.isEmpty) {
+                    return const Center(child: Text('No audios available'));
+                  }
+
+                  return ListView.builder(
+                    itemCount: audios.length,
+                    itemBuilder: (context, index) {
+                      final audio = audios[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 0),
+                        child: AudioCard(
+                          audio: audio,
+                          onTap: () {
+                            // Handle card tap
+                            print('Audio card tapped for ${audio.title}');
+                          },
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),
@@ -101,16 +209,12 @@ class ProfilePage extends StatelessWidget {
   }
 
   void _logout(BuildContext context) async {
-    // Access the AuthRepository
     final authRepository = AuthRepositoryImpl(http.Client());
 
     try {
       await authRepository.signOut();
-
-      // onLogout callback to reset the index to 0 (home)
-      onLogout();
+      widget.onLogout(); // Trigger the onLogout callback
     } catch (e) {
-      // Handle errors (you could display a snackbar or an alert dialog here)
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to log out.')),
       );

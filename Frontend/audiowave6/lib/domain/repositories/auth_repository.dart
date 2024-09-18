@@ -1,4 +1,6 @@
 
+import '../entities/user.dart';
+
 abstract class AuthRepository {
   Future<String> getPublicKey();
   Future<bool> signIn(String email, String password);
@@ -7,4 +9,5 @@ abstract class AuthRepository {
   Future<bool> register(String email, String username, String password, String firstName, String lastName);
   Future<bool> checkUsername(String username);
   Future<bool> checkEmail(String email);
+  Future<User> getUserInfo(int userId);
 }

@@ -1,12 +1,14 @@
+import 'dart:typed_data';
+
 class Audio {
   final int id;
   final String? title;
   final String? description;
-  final List<int>? thumbnail;
+  final Uint8List? thumbnail;
   final int durationSec;
   final int? fileSize;
   final String? fileType;
-  final List<int>? fileChecksum;
+  final Uint8List? fileChecksum;
   final int? listens;
   final int? statusId;
   final int visibilityId;

@@ -5,6 +5,7 @@ import '../../domain/entities/audio.dart';
 import '../../domain/entities/status.dart';
 import '../../domain/entities/visibility.dart';
 import '../../domain/repositories/metadata_repository.dart';
+import '../../utils/storage_utils.dart';
 import '../models/audio_model.dart';
 import '../models/status_model.dart';
 import '../models/visibility_model.dart';
@@ -18,7 +19,14 @@ class MetadataRepositoryImpl implements MetadataRepository {
 
   @override
   Future<Audio> getAudio(int id) async {
-    final response = await client.get(Uri.parse('$baseUrl/$id'));
+    String? token = await StorageUtils.getToken();
+    final response = await client.get(
+      Uri.parse('$baseUrl/$id'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -30,7 +38,14 @@ class MetadataRepositoryImpl implements MetadataRepository {
 
   @override
   Future<Audio> getAudioForListen(int id) async {
-    final response = await client.get(Uri.parse('$baseUrl/GetAudioForListen/$id'));
+    String? token = await StorageUtils.getToken();
+    final response = await client.get(
+      Uri.parse('$baseUrl/GetAudioForListen/$id'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -53,10 +68,33 @@ class MetadataRepositoryImpl implements MetadataRepository {
   }
 
   @override
+  Future<List<Audio>> getAudiosByUser(int userId) async {
+    String? token = await StorageUtils.getToken();
+    final response = await client.get(
+      Uri.parse('$baseUrl/GetAudiosByUser?uploaderId=$userId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body) as List;
+      return data.map((audio) => AudioModel.fromJson(audio)).toList();
+    } else {
+      throw Exception('Failed to load audios');
+    }
+  }
+
+  @override
   Future<int> addAudio(Audio audio) async {
+    String? token = await StorageUtils.getToken();
     final response = await client.post(
       Uri.parse(baseUrl),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
       body: json.encode({
         'title': audio.title,
         'description': audio.description,
@@ -80,9 +118,13 @@ class MetadataRepositoryImpl implements MetadataRepository {
 
   @override
   Future<Audio> updateAudio(int id, Audio audio) async {
+    String? token = await StorageUtils.getToken();
     final response = await client.put(
       Uri.parse('$baseUrl/$id'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
       body: json.encode({
         'id': id,
         'title': audio.title,
@@ -107,6 +149,7 @@ class MetadataRepositoryImpl implements MetadataRepository {
 
   @override
   Future<bool> deleteAudio(int id) async {
+    String? token = await StorageUtils.getToken();
     final response = await client.delete(Uri.parse('$baseUrl/$id'));
 
     if (response.statusCode == 200) {
@@ -134,7 +177,9 @@ class MetadataRepositoryImpl implements MetadataRepository {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body) as List;
-      return data.map((visibility) => VisibilityModel.fromJson(visibility)).toList();
+      return data
+          .map((visibility) => VisibilityModel.fromJson(visibility))
+          .toList();
     } else {
       throw Exception('Failed to load visibilities');
     }
