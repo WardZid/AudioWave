@@ -16,4 +16,7 @@ class Endpoints {
   // AudioFileService Endpoints
   static const String uploadAudioUrl = '$baseUrl/audio/upload';
   static const String playbackAudioUrl = '$baseUrl/audio/playback';
+
+  //PlaylistService Endpoints
+  static const String playlistUrl = '$baseUrl/playlist';
 }
