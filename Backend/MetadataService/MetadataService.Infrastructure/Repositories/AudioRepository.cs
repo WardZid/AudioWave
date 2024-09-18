@@ -52,6 +52,11 @@ namespace MetadataService.Infrastructure.Repositories
             return await _context.Set<Audio>().FindAsync(id);
         }
 
+        public async Task<IEnumerable<Audio>> GetByUserIdAsync(int userId)
+        {
+            return await _context.Set<Audio>().Where(a => a.UploaderId == userId).ToListAsync();
+        }
+
         public async Task<Audio> UpdateAsync(Audio entity, int userId)
         {
             if (entity.UploaderId != userId)

@@ -138,6 +138,18 @@ namespace MetadataService.Service
         {
             return await _audioRepository.GetAllAsync();
         }
+        public async Task<IEnumerable<Audio>> GetAllAudiosByUserID(int uploaderId, int userId)
+        {
+            IEnumerable<Audio> audios = await _audioRepository.GetByUserIdAsync(uploaderId);
+
+            if(uploaderId != userId)
+            {
+                Visibility publicVis = await _visibilityRepository.GetByTitleAsync("Public");
+                audios = audios.Where(a => a.VisibilityId == publicVis.Id);
+            }
+            return audios;
+
+        }
 
         public async Task<Audio?> UpdateAudio(Audio audio, int userId)
         {

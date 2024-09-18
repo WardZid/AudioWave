@@ -82,6 +82,29 @@ namespace MetadataService.API.Controllers
             }
         }
 
+        [HttpGet("GetAudiosByUser")]
+        public async Task<ActionResult<IEnumerable<Audio>>> GetAudiosByUser([FromQuery] int uploaderId)
+        {
+            try
+            {
+                int userId = -1;
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim != null)
+                {
+                    userId = int.Parse(userIdClaim.Value);
+                }
+
+
+                var audios = await _audioService.GetAllAudiosByUserID(uploaderId, userId);
+                return Ok(audios);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddAudio(AddAudioDto audioDto)
@@ -107,7 +130,7 @@ namespace MetadataService.API.Controllers
 
                 if (audioId == 0)
                 {
-                    return StatusCode(500,"Error audio 0");
+                    return StatusCode(500, "Error audio 0");
                 }
                 return CreatedAtAction(nameof(GetAudio), new { id = audioId }, audioId);
             }
