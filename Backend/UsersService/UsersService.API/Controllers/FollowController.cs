@@ -18,7 +18,7 @@ namespace UsersService.API.Controllers
     {
         private readonly IFollowService _followService = followService;
 
-
+        [Authorize]
         [HttpPost("AddFollow")]
         public async Task<IActionResult> AddFollow([FromBody][Required] int followeeId)
         {
@@ -51,6 +51,8 @@ namespace UsersService.API.Controllers
 
         }
 
+
+        [Authorize]
         [HttpDelete("RemoveFollow")]
         public async Task<IActionResult> RemoveFollow([FromBody][Required] int followeeId)
         {
@@ -82,6 +84,8 @@ namespace UsersService.API.Controllers
             }
         }
 
+
+        [Authorize]
         [HttpDelete("RemoveFollower")]
         public async Task<IActionResult> RemoveFollower([FromBody][Required] int followerId)
         {
@@ -114,7 +118,7 @@ namespace UsersService.API.Controllers
             }
         }
 
-
+        [Authorize]
         [HttpGet("GetFollowers")]
         public async Task<ActionResult<IEnumerable<User>>> GetFollowers()
         {
@@ -131,6 +135,7 @@ namespace UsersService.API.Controllers
             return Ok(followers);
         }
 
+        [Authorize]
         [HttpGet("GetFollowing")]
         public async Task<ActionResult<IEnumerable<User>>> GetFollowing()
         {

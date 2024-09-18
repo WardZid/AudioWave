@@ -14,5 +14,6 @@ namespace UsersService.Service.IService
         Task<bool> EmailExists(string username);
         Task<bool> RegisterUserAsync(string email, string username, string password, string firstName, string lastName);
         Task<UserEntity?> AuthenticateUserAsync(string email, string password);
+        Task<UserInfoDto> GetUserInfo(int userToFetchId, int userId);
     }
 }

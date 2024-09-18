@@ -17,6 +17,7 @@ public class LikesController(
 {
     private readonly ILikeService _likeService = likeService;
 
+    [Authorize]
     [HttpPost("AddLike")]
     public async Task<IActionResult> AddLike([FromHeader][Required] int audioId)
     {
@@ -45,6 +46,7 @@ public class LikesController(
         return BadRequest();
     }
 
+    [Authorize]
     [HttpDelete("RemoveLike")]
     public async Task<IActionResult> RemoveLike([FromHeader][Required] int audioId)
     {

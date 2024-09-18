@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using UsersService.Core.DTOs;
 using UsersService.Service;
 using UsersService.Service.IService;
@@ -75,7 +76,7 @@ namespace UsersService.API.Controllers
 
             // Authentication successful, generate and return JWT token
             var token = _tokenService.GenerateToken(user.Id.ToString(), user.Email, 30);
-            return Ok(new { Token = token });
+            return Ok(new { UserId = user.Id, Token = token });
         }
 
         [HttpPost("login-encrypted")]
@@ -97,7 +98,7 @@ namespace UsersService.API.Controllers
 
             // Authentication successful, generate and return JWT token
             var token = _tokenService.GenerateToken(user.Id.ToString(), user.Email, 30);
-            return Ok(new { Token = token });
+            return Ok(new {UserId = user.Id, Token = token });
         }
 
         [HttpGet("public-key")]
@@ -109,7 +110,7 @@ namespace UsersService.API.Controllers
             string publicEncryptionKey = _authEncryptionService.PublicKey;
 
             if (string.IsNullOrEmpty(publicEncryptionKey))
-            { return StatusCode(StatusCodes.Status503ServiceUnavailable) ; }
+            { return StatusCode(StatusCodes.Status503ServiceUnavailable); }
 
             return Ok(publicEncryptionKey);
         }
@@ -136,6 +137,34 @@ namespace UsersService.API.Controllers
 
             var exists = await _userService.EmailExists(email);
             return Ok(exists);
+        }
+
+        [HttpGet("user-info")]
+        public async Task<IActionResult> GetUserinfo([FromQuery] int userId)
+        {
+            try
+            {
+
+                int requestorId = -1;
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim != null)
+                {
+                    requestorId = int.Parse(userIdClaim.Value);
+                }
+
+
+                UserInfoDto dto = await _userService.GetUserInfo(userId, requestorId);
+                return Ok(dto);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
     }
 }

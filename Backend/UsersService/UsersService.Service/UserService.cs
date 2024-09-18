@@ -146,6 +146,32 @@ namespace UsersService.Service
             // Authentication successful, return the user
             return userEntity;
         }
+
+        public async Task<UserInfoDto> GetUserInfo(int userToFetchId, int userId)
+        {
+            User? user = await _userRepository.GetUserByIdAsync(userToFetchId);
+
+            if (user == null)
+            {
+                throw new KeyNotFoundException("User not found");
+            }
+
+            UserInfoDto dto = new UserInfoDto();
+
+            dto.UserId = user.Id;
+            dto.Username = user.Username;
+            dto.FirstName = user.FirstName;
+            dto.LastName = user.LastName;
+
+            if (userId == user.Id)
+            {
+
+                dto.Email = user.Email;
+            }
+
+            return dto;
+
+        }
     }
 
 }
