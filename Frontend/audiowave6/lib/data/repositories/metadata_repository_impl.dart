@@ -98,21 +98,22 @@ class MetadataRepositoryImpl implements MetadataRepository {
       body: json.encode({
         'title': audio.title,
         'description': audio.description,
-        'thumbnail': audio.thumbnail,
+        'thumbnail':audio.thumbnail != null ? base64Encode(audio.thumbnail!) : null,
         'durationSec': audio.durationSec,
         'fileSize': audio.fileSize,
         'fileType': audio.fileType,
-        'fileChecksum': audio.fileChecksum,
+        'fileChecksum': audio.fileChecksum != null ? base64Encode(audio.fileChecksum!) : null,
         'visibilityId': audio.visibilityId,
-        'uploaderId': audio.uploaderId,
+        'tags': audio.tags
       }),
     );
-
+    
     if (response.statusCode == 201) {
       final data = json.decode(response.body);
-      return data['id']; // return the audio ID
+      return data;
     } else {
-      throw Exception('Failed to add audio');
+      print("Failed to add audio: " + response.body);
+      throw Exception("Failed to add audio: " + response.body);
     }
   }
 

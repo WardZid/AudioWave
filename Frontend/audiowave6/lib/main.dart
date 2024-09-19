@@ -4,7 +4,7 @@ import 'data/repositories/auth_repository_impl.dart';
 import 'domain/repositories/auth_repository.dart';
 import 'utils/storage_utils.dart';
 import 'view/Home.dart';
-import 'view/Login.dart';
+import 'view/secondary/Login.dart';
 import 'view/Explore.dart';
 import 'view/Saved.dart';
 import 'view/Profile.dart';

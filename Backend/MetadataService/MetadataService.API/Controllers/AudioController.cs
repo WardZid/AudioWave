@@ -112,7 +112,7 @@ namespace MetadataService.API.Controllers
 
             if (audioDto == null)
             {
-                return BadRequest();
+                return BadRequest("dto null");
             }
 
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -144,7 +144,7 @@ namespace MetadataService.API.Controllers
                     {
                         code = 500,
                         message = "Internal Server Error",
-                        details = "An unexpected error occurred while processing your request. Please try again later."
+                        details = "An unexpected error occurred while processing your request. Please try again later. Error: " + ex.Message
                     }
                 });
             }

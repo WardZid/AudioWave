@@ -14,6 +14,7 @@ class Audio {
   final int visibilityId;
   final DateTime? uploadedAt;
   final int? uploaderId;
+  final List<String>? tags;
 
   Audio({
     required this.id,
@@ -29,5 +30,6 @@ class Audio {
     required this.visibilityId,
     this.uploadedAt,
     this.uploaderId,
+    this.tags,
   });
 }

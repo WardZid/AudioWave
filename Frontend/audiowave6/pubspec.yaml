@@ -16,6 +16,9 @@ dependencies:
   jwt_decoder: ^2.0.1
   rsa_encrypt: ^2.0.0
   shared_preferences: ^2.3.2
+  file_picker: ^8.1.2
+  audioplayers: ^6.1.0
+  crypto: ^3.0.5
 
 dev_dependencies:
   flutter_test:

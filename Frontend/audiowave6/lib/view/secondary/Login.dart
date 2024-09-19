@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import '../data/repositories/auth_repository_impl.dart';
+import '../../data/repositories/auth_repository_impl.dart';
+import 'Register.dart';
 
-class Register extends StatefulWidget {
-  const Register({Key? key}) : super(key: key);
+class SignIn extends StatefulWidget {
+  const SignIn({Key? key}) : super(key: key);
 
   @override
-  _RegisterState createState() => _RegisterState();
+  _SignInState createState() => _SignInState();
 }
 
-class _RegisterState extends State<Register> {
+class _SignInState extends State<SignIn> {
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
-  Future<void> _register() async {
+  Future<void> _signIn() async {
     if (_formKey.currentState?.validate() ?? false) {
       setState(() {
         _isLoading = true;
@@ -27,19 +25,22 @@ class _RegisterState extends State<Register> {
       final authRepo = AuthRepositoryImpl(http.Client());
 
       try {
-        await authRepo.register(
+        
+        bool successful = await authRepo.signIn(
           _emailController.text,
-          _usernameController.text,
           _passwordController.text,
-          _firstNameController.text,
-          _lastNameController.text,
         );
-        // Handle successful registration (e.g., navigate to sign-in page)
-        Navigator.pop(context);
+        
+        if (successful){
+          // close login screen that was "pushed" returning a sucess result
+          Navigator.pop(context, true);
+        }
       } catch (e) {
-        // Handle registration error
+        String errorMessage = e.toString().replaceFirst('Exception: ', '');
+        print(errorMessage);
+        // Handle sign in error
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registration failed')),
+          SnackBar(content: Text(errorMessage)),
         );
       } finally {
         setState(() {
@@ -53,7 +54,7 @@ class _RegisterState extends State<Register> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Register'),
+        title: const Text('Sign In'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -74,16 +75,6 @@ class _RegisterState extends State<Register> {
                 },
               ),
               TextFormField(
-                controller: _usernameController,
-                decoration: const InputDecoration(labelText: 'Username'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your username';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
                 controller: _passwordController,
                 obscureText: true,
                 decoration: const InputDecoration(labelText: 'Password'),
@@ -94,34 +85,24 @@ class _RegisterState extends State<Register> {
                   return null;
                 },
               ),
-              TextFormField(
-                controller: _firstNameController,
-                decoration: const InputDecoration(labelText: 'First Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your first name';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _lastNameController,
-                decoration: const InputDecoration(labelText: 'Last Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your last name';
-                  }
-                  return null;
-                },
-              ),
               const SizedBox(height: 20),
               if (_isLoading)
                 const CircularProgressIndicator()
               else
                 ElevatedButton(
-                  onPressed: _register,
-                  child: const Text('Register'),
+                  onPressed: _signIn,
+                  child: const Text('Sign In'),
                 ),
+              const SizedBox(height: 20),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Register()),
+                  );
+                },
+                child: const Text('Create an account'),
+              ),
             ],
           ),
         ),

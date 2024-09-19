@@ -7,6 +7,7 @@ import '../domain/entities/user.dart';
 import '../utils/storage_utils.dart';
 import '../view/secondary/AddAudio.dart';
 import 'Helpers/audio_card.dart';
+import 'Helpers/audio_tile.dart';
 
 class ProfilePage extends StatefulWidget {
   final VoidCallback onLogout;
@@ -152,7 +153,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     context: context,
                     isScrollControlled: true, //allow full-screen if needed
                     builder: (BuildContext context) {
-                      return const AddAudioPage(); 
+                      return AddAudioPage(metadataRepository: new MetadataRepositoryImpl(http.Client()),); 
                     },
                   );
                 },
@@ -189,7 +190,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       final audio = audios[index];
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 0),
-                        child: AudioCard(
+                        child: AudioTile(
                           audio: audio,
                           onTap: () {
                             // Handle card tap
