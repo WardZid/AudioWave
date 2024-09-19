@@ -239,11 +239,11 @@ class _AddAudioPageState extends State<AddAudioPage> {
       ),
     );
   }
-
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: Padding(
+Widget build(BuildContext context) {
+  return Scaffold(
+    resizeToAvoidBottomInset: true, // This allows the layout to adjust when the keyboard is open
+    body: SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
@@ -255,7 +255,7 @@ class _AddAudioPageState extends State<AddAudioPage> {
           ),
           const SizedBox(height: 16),
 
-          // title
+          // Title
           TextField(
             controller: _titleController,
             decoration: const InputDecoration(
@@ -264,7 +264,7 @@ class _AddAudioPageState extends State<AddAudioPage> {
             ),
           ),
 
-          // description
+          // Description
           const SizedBox(height: 16),
           TextField(
             controller: _descriptionController,
@@ -280,7 +280,7 @@ class _AddAudioPageState extends State<AddAudioPage> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Visibility:',
                 style: TextStyle(
                   fontSize: 16,
@@ -329,7 +329,7 @@ class _AddAudioPageState extends State<AddAudioPage> {
               padding: const EdgeInsets.only(top: 8.0),
               child: Text(
                 'Thumbnail: $_thumbnailFileName',
-                style: TextStyle(fontSize: 14, color: Colors.black54),
+                style: const TextStyle(fontSize: 14, color: Colors.black54),
               ),
             ),
           const SizedBox(height: 16),
@@ -359,16 +359,14 @@ class _AddAudioPageState extends State<AddAudioPage> {
               ),
             ],
           ),
-
           if (_audioFileName != null)
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: Text(
                 'MP3 File: $_audioFileName',
-                style: TextStyle(fontSize: 14, color: Colors.black54),
+                style: const TextStyle(fontSize: 14, color: Colors.black54),
               ),
             ),
-
           const SizedBox(height: 16),
 
           // Tags input section
@@ -376,9 +374,9 @@ class _AddAudioPageState extends State<AddAudioPage> {
             controller: _tagsController,
             decoration: InputDecoration(
               labelText: 'Add Tags',
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
               suffixIcon: IconButton(
-                icon: Icon(Icons.add),
+                icon: const Icon(Icons.add),
                 onPressed: () => _addTag(_tagsController.text),
               ),
             ),
@@ -394,9 +392,6 @@ class _AddAudioPageState extends State<AddAudioPage> {
           ),
           const SizedBox(height: 16),
 
-
-          const Spacer(), // Push the upload button to the bottom
-
           // Upload Audio Button
           Row(
             children: [
@@ -410,6 +405,8 @@ class _AddAudioPageState extends State<AddAudioPage> {
           ),
         ],
       ),
-    ));
-  }
+    ),
+  );
+}
+
 }
