@@ -41,7 +41,7 @@ class AudioModel extends Audio {
       durationSec: json['durationSec'],
       fileSize: json['fileSize'],
       fileType: json['fileType'],
-      fileChecksum: json['fileChecksum'] != null ? Uint8List.fromList(List<int>.from(json['fileChecksum'])) : null, // Convert checksum to Uint8List
+      //fileChecksum: json['fileChecksum'] != null ? Uint8List.fromList(List<int>.from(json['fileChecksum'])) : null, // Convert checksum to Uint8List
       listens: json['listens'],
       statusId: json['statusId'],
       visibilityId: json['visibilityId'],

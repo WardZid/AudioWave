@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:audiowave6/data/api/endpoints.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -31,7 +33,7 @@ class UploadRepositoryImpl implements UploadRepository {
     request.fields['chunkDurationSecs'] = chunkDurationSecs.toString();
 
     request.files.add(audioChunk);
-    
+
     if (token != null) {
       request.headers['Authorization'] = 'Bearer $token';
     }

@@ -1,3 +1,4 @@
+import 'package:audiowave6/data/repositories/upload_repository_impl.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../data/repositories/auth_repository_impl.dart';
@@ -35,30 +36,27 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<List<Audio>> fetchAudioList() async {
-  try {
-    String? userId = await StorageUtils.getUserId();
-    if (userId == null) {
-      throw Exception("User not found");
+    try {
+      String? userId = await StorageUtils.getUserId();
+      if (userId == null) {
+        throw Exception("Audios not found");
+      }
+
+      return await metadataRepository.getAudiosByUser(int.parse(userId));
+    } catch (e) {
+      return [];
     }
-
-    return await metadataRepository.getAudiosByUser(int.parse(userId));
-  } catch (e) {
-    return [];
   }
-}
-
 
   Future<User?> fetchUserInfo() async {
     try {
       String? userId = await StorageUtils.getUserId();
-      if(userId == null){
+      if (userId == null) {
         throw new Exception("user not found");
       }
       int parseUserId = int.parse(userId);
-      
+
       return await authRepository.getUserInfo(parseUserId);
-
-
     } catch (e) {
       print("ERROR");
       print(e);
@@ -134,7 +132,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         const SizedBox(height: 4),
                         Text(
                           user.email, // Display emai;
-                          style: const TextStyle(fontSize: 16, color: Colors.grey),
+                          style:
+                              const TextStyle(fontSize: 16, color: Colors.grey),
                         ),
                       ],
                     ),
@@ -153,7 +152,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     context: context,
                     isScrollControlled: true, //allow full-screen if needed
                     builder: (BuildContext context) {
-                      return AddAudioPage(metadataRepository: new MetadataRepositoryImpl(http.Client()),); 
+                      return AddAudioPage(
+                        metadataRepository:
+                            new MetadataRepositoryImpl(http.Client()),
+                        uploadRepository:
+                            new UploadRepositoryImpl(http.Client()),
+                      );
                     },
                   );
                 },
