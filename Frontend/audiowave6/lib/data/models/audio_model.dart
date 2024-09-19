@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import '../../domain/entities/audio.dart';
 
@@ -37,7 +38,7 @@ class AudioModel extends Audio {
       id: json['id'],
       title: json['title'],
       description: json['description'],
-      thumbnail: json['thumbnail'] != null ? Uint8List.fromList(List<int>.from(json['thumbnail'])) : null, // Convert thumbnail to Uint8List
+      thumbnail: json['thumbnail'] != null ? Uint8List.fromList(List<int>.from(jsonDecode(json['thumbnail']))) : null, // Convert thumbnail to Uint8List
       durationSec: json['durationSec'],
       fileSize: json['fileSize'],
       fileType: json['fileType'],
