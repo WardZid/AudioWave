@@ -23,9 +23,11 @@ class AudioTile extends StatelessWidget {
     return GestureDetector(
       onTap: onTap, // Call the provided function when the tile is tapped
       child: Card(
+
         elevation: 4,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -40,10 +42,11 @@ class AudioTile extends StatelessWidget {
                 ),
               ],
             ),
+            
             const SizedBox(height: 10),
             // Title of the audio under the thumbnail
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: Text(
                 audio.title ?? 'Unknown Title',
                 style: const TextStyle(
@@ -54,35 +57,40 @@ class AudioTile extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
+            
+            const SizedBox(height: 10),
           ],
         ),
       ),
     );
   }
 
-  // Widget for displaying thumbnail or a placeholder
-  Widget _buildThumbnail() {
-    return Container(
-      height: 180, // Large height for the thumbnail
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        color: Colors.grey[200], // Background color in case thumbnail is null
-        image: audio.thumbnail != null
-            ? DecorationImage(
-                image: MemoryImage(audio.thumbnail!),
-                fit: BoxFit.cover,
-              )
-            : null, // No image if thumbnail is null
-      ),
-      child: audio.thumbnail == null
-          ? const Icon(
+ Widget _buildThumbnail() {
+  return Container(
+    height: 180, // Large height for the thumbnail
+    width: double.infinity, // Ensure the container takes up the full width
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(8),
+      color: Colors.grey[200], // Background color in case thumbnail is null
+      image: audio.thumbnail != null
+          ? DecorationImage(
+              image: MemoryImage(audio.thumbnail!),
+              fit: BoxFit.cover,
+            )
+          : null, // No image if thumbnail is null
+    ),
+    child: audio.thumbnail == null
+        ? Center(
+            child: const Icon(
               Icons.headphones,
               size: 100,
               color: Colors.grey,
-            )
-          : null,
-    );
-  }
+            ),
+          )
+        : null,
+  );
+}
+
 
   // Widget to display the duration over the bottom right of the thumbnail
   Widget _buildDurationOverlay() {
