@@ -1,6 +1,7 @@
 // audio_player_service.dart
 import 'package:just_audio/just_audio.dart';
 import 'dart:typed_data';
+import 'package:rxdart/rxdart.dart';
 import '../domain/entities/audio.dart';
 import '../domain/repositories/playback_repository.dart';
 
@@ -14,13 +15,12 @@ class AudioPlayerService {
   AudioPlayerService._internal();
 
   final AudioPlayer _audioPlayer = AudioPlayer();
-  final ConcatenatingAudioSource _playlist =
-      ConcatenatingAudioSource(children: []);
+  final ConcatenatingAudioSource _playlist = ConcatenatingAudioSource(children: []);
   Audio? _currentAudio;
   PlaybackRepository? _playbackRepository;
 
-  int _currentChunkIndex = 0;
-  int _totalChunks = 0;
+  int _currentChunkIndex = 1; // Start from 1 instead of 0
+  late int _totalChunks;
   bool _isFetching = false;
 
   void initialize(PlaybackRepository playbackRepository) {
@@ -34,11 +34,11 @@ class AudioPlayerService {
 
     // Reset state
     _playlist.clear();
-    _currentChunkIndex = 1;
+    _currentChunkIndex = 1; // Start from 1
     _isFetching = false;
 
     // Calculate total number of chunks
-    _totalChunks = (audio.durationSec / 5).ceil();
+    _totalChunks = ((audio.durationSec + 4) / 5).floor(); // Adjusted calculation
 
     // Start by fetching the first few chunks
     await _fetchAndAppendChunks(initialLoad: true);
@@ -48,7 +48,7 @@ class AudioPlayerService {
       if (sequenceState == null) return;
 
       // Fetch more chunks when there are less than 2 chunks left to play
-      if (_playlist.length - _audioPlayer.currentIndex! <= 2 && !_isFetching) {
+      if (_playlist.length - (_audioPlayer.currentIndex ?? 0) <= 2 && !_isFetching) {
         _isFetching = true;
         await _fetchAndAppendChunks();
         _isFetching = false;
@@ -60,14 +60,12 @@ class AudioPlayerService {
     _audioPlayer.play();
   }
 
-  Future<void> _fetchAndAppendChunks({bool initialLoad = false}) async {
-    // Fetch 5 chunks at a time or remaining chunks
-    int chunksToFetch = 5;
+  Future<void> _fetchAndAppendChunks({int chunksToFetch = 5, bool initialLoad = false}) async {
     if (initialLoad) {
       chunksToFetch = 3; // Fetch first 3 chunks initially
     }
 
-    while (_currentChunkIndex < _totalChunks && chunksToFetch > 0) {
+    while (_currentChunkIndex <= _totalChunks && chunksToFetch > 0) {
       try {
         Uint8List chunkData = await _playbackRepository!.getChunk(
           _currentAudio!.id,
@@ -91,24 +89,55 @@ class AudioPlayerService {
     }
   }
 
-  void seek(Duration position) {
-    _audioPlayer.seek(position);
-  }
-
-  void seekRelative(int seconds) {
-    final newPosition = _audioPlayer.position + Duration(seconds: seconds);
-    _audioPlayer.seek(newPosition);
-  }
-
-  Stream<Duration> get positionStream => _audioPlayer.positionStream;
-
-  Stream<Duration?> get durationStream => _audioPlayer.durationStream;
-
   void pause() => _audioPlayer.pause();
 
   void resume() => _audioPlayer.play();
 
   void stop() => _audioPlayer.stop();
+
+  /// Adjusted seek method to handle seeking across chunks
+  Future<void> seek(Duration position) async {
+    int targetChunkIndex = (position.inSeconds ~/ 5) + 1; // Adjusted for 1-based indexing
+    Duration positionInChunk = position - Duration(seconds: (targetChunkIndex - 1) * 5);
+
+    // Ensure the target chunk is loaded
+    if (targetChunkIndex > _playlist.length) {
+      // Fetch chunks up to targetChunkIndex
+      while (_currentChunkIndex <= targetChunkIndex && _currentChunkIndex <= _totalChunks) {
+        await _fetchAndAppendChunks(chunksToFetch: 1);
+      }
+    }
+
+    if (targetChunkIndex <= _playlist.length) {
+      await _audioPlayer.seek(positionInChunk, index: targetChunkIndex - 1);
+    } else {
+      print('Target chunk index $targetChunkIndex is not available.');
+    }
+  }
+
+  void seekRelative(int seconds) {
+    final newPosition = currentPosition + Duration(seconds: seconds);
+    seek(newPosition);
+  }
+
+  /// Stream that provides cumulative position across all chunks
+  Stream<Duration> get positionStream => Rx.combineLatest2<int?, Duration, Duration>(
+        _audioPlayer.currentIndexStream,
+        _audioPlayer.positionStream,
+        (currentIndex, position) {
+          if (currentIndex == null) return Duration.zero;
+          return Duration(seconds: (currentIndex) * 5) + position;
+        },
+      );
+
+  Duration get currentPosition {
+    int currentIndex = _audioPlayer.currentIndex ?? 0;
+    Duration positionInChunk = _audioPlayer.position;
+    return Duration(seconds: (currentIndex) * 5) + positionInChunk;
+  }
+
+  /// Expose total duration from the Audio object
+  Duration get totalDuration => Duration(seconds: _currentAudio?.durationSec ?? 0);
 
   Audio? get currentAudio => _currentAudio;
 

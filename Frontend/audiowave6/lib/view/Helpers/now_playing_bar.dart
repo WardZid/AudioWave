@@ -1,10 +1,14 @@
 // now_playing_bar.dart
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+
 import '../../services/audio_player_service.dart';
+import '../secondary/AudioPlayerPage.dart';
 
 class NowPlayingBar extends StatelessWidget {
   final audioPlayerService = AudioPlayerService();
+
+  NowPlayingBar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -13,26 +17,55 @@ class NowPlayingBar extends StatelessWidget {
       builder: (context, snapshot) {
         final playerState = snapshot.data;
 
+        // Check if there's an audio currently playing
         if (audioPlayerService.currentAudio == null) {
-          return SizedBox.shrink();
+          return SizedBox.shrink(); // Return empty widget if no audio is playing
         }
 
-        return Container(
-          color: Colors.grey[200],
-          child: ListTile(
-            leading: Icon(Icons.music_note),
-            title: Text(audioPlayerService.currentAudio?.title ?? 'Unknown Title'),
-            trailing: IconButton(
-              icon: Icon(
-                playerState?.playing ?? false ? Icons.pause : Icons.play_arrow,
+        final isPlaying = playerState?.playing ?? false;
+        final currentAudio = audioPlayerService.currentAudio!;
+
+        return GestureDetector(
+          onTap: () {
+            // Navigate to the AudioPlayerPage
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AudioPlayerPage(audio: currentAudio),
               ),
-              onPressed: () {
-                if (playerState?.playing ?? false) {
-                  audioPlayerService.pause();
-                } else {
-                  audioPlayerService.resume();
-                }
-              },
+            );
+          },
+          child: Container(
+            color: Colors.grey[200],
+            child: ListTile(
+              leading: currentAudio.thumbnail != null
+                  ? Image.memory(
+                      currentAudio.thumbnail!,
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                    )
+                  : Icon(Icons.music_note, size: 50),
+              title: Text(
+                currentAudio.title ?? 'Unknown Title',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              subtitle: Text(
+                isPlaying ? 'Playing' : 'Paused',
+              ),
+              trailing: IconButton(
+                icon: Icon(
+                  isPlaying ? Icons.pause : Icons.play_arrow,
+                ),
+                onPressed: () {
+                  if (isPlaying) {
+                    audioPlayerService.pause();
+                  } else {
+                    audioPlayerService.resume();
+                  }
+                },
+              ),
             ),
           ),
         );

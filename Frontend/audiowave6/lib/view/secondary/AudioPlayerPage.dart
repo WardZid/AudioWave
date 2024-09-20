@@ -1,4 +1,5 @@
 // audio_player_page.dart
+
 import 'package:flutter/material.dart';
 import '../../domain/entities/audio.dart';
 import '../../services/audio_player_service.dart';
@@ -16,20 +17,22 @@ class AudioPlayerPage extends StatefulWidget {
 
 class _AudioPlayerPageState extends State<AudioPlayerPage> {
   final audioPlayerService = AudioPlayerService();
-  late Stream<PlayerState> _playerStateStream;
   late Stream<DurationState> _durationStateStream;
   bool isLiked = false;
 
   @override
   void initState() {
     super.initState();
-    // The audio playback is already started from the AudioTile or elsewhere
-    _playerStateStream = audioPlayerService.playerStateStream;
-    _durationStateStream = Rx.combineLatest2<Duration, Duration?, DurationState>(
-      audioPlayerService.positionStream,
-      audioPlayerService.durationStream,
-      (position, duration) => DurationState(position, duration ?? Duration.zero),
+
+    // Use the cumulative position stream and total duration from the audioPlayerService
+    _durationStateStream = audioPlayerService.positionStream.map(
+      (position) => DurationState(position, audioPlayerService.totalDuration),
     );
+
+    // Start playing the audio if it's not already playing
+    if (audioPlayerService.currentAudio?.id != widget.audio.id) {
+      audioPlayerService.playAudio(widget.audio);
+    }
   }
 
   @override
@@ -70,6 +73,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
                 Text(
                   widget.audio.title ?? 'Unknown Title',
                   style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
                 // Audio description
@@ -77,6 +81,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
                   Text(
                     widget.audio.description!,
                     style: const TextStyle(fontSize: 16),
+                    textAlign: TextAlign.center,
                   ),
                 const SizedBox(height: 16),
                 // Progress bar
@@ -121,7 +126,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
                       },
                     ),
                     StreamBuilder<PlayerState>(
-                      stream: _playerStateStream,
+                      stream: audioPlayerService.playerStateStream,
                       builder: (context, snapshot) {
                         final playerState = snapshot.data;
                         final isPlaying = playerState?.playing ?? false;
