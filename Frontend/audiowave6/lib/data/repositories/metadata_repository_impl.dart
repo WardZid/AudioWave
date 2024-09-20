@@ -151,7 +151,13 @@ class MetadataRepositoryImpl implements MetadataRepository {
   @override
   Future<bool> deleteAudio(int id) async {
     String? token = await StorageUtils.getToken();
-    final response = await client.delete(Uri.parse('$baseUrl/$id'));
+    final response = await client.delete(
+      Uri.parse('$baseUrl/$id'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      );
 
     if (response.statusCode == 200) {
       return true;

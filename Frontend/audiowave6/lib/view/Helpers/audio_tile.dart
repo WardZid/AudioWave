@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/audio.dart';
+import '../../services/audio_player_service.dart';
+import '../secondary/AudioPlayerPage.dart';
 
 class AudioTile extends StatelessWidget {
   final Audio audio;
-  final VoidCallback onTap;
 
   const AudioTile({
     Key? key,
     required this.audio,
-    required this.onTap,
   }) : super(key: key);
 
   // Helper method to format duration in seconds into a mm:ss format
@@ -21,7 +21,18 @@ class AudioTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap, // Call the provided function when the tile is tapped
+      onTap: () {
+        final audioPlayerService = AudioPlayerService();
+        audioPlayerService.playAudio(audio);
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AudioPlayerPage(audio: audio),
+          ),
+        );
+      },
+      
       child: Card(
 
         elevation: 4,

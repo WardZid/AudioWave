@@ -1,8 +1,12 @@
+// main.dart
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'data/repositories/auth_repository_impl.dart';
 import 'domain/repositories/auth_repository.dart';
-import 'utils/storage_utils.dart';
+import 'domain/repositories/playback_repository.dart';
+import 'data/repositories/playback_repository_impl.dart';
+import 'services/audio_player_service.dart';
+import 'view/Helpers/now_playing_bar.dart';
 import 'view/Home.dart';
 import 'view/secondary/Login.dart';
 import 'view/Explore.dart';
@@ -11,6 +15,10 @@ import 'view/Profile.dart';
 
 void main() {
   final AuthRepository authRepository = AuthRepositoryImpl(http.Client());
+  final PlaybackRepository playbackRepository = PlaybackRepositoryImpl(http.Client());
+  final audioPlayerService = AudioPlayerService();
+  audioPlayerService.initialize(playbackRepository);
+
   runApp(MainApp(authRepository: authRepository));
 }
 
@@ -44,12 +52,12 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   bool _isSignedIn = false;
 
-  late final List<Widget> _pages= <Widget>[
-      const HomePage(),
-      const ExplorePage(),
-      const SavedPage(),
-      ProfilePage(onLogout: _handleLogout), 
-    ];
+  late final List<Widget> _pages = <Widget>[
+    const HomePage(),
+    const ExplorePage(),
+    const SavedPage(),
+    ProfilePage(onLogout: _handleLogout),
+  ];
 
   @override
   void initState() {
@@ -65,49 +73,23 @@ class _MyHomePageState extends State<MyHomePage> {
   void _handleLogout() {
     setState(() {
       _isSignedIn = false;
-      _selectedIndex = 0; // Set to Home when logging out
+      _selectedIndex = 0;
     });
   }
 
   void _onItemTapped(int index) async {
     _isSignedIn = await widget.authRepository.isSignedIn();
-    print('signed in: $_isSignedIn');
-    if ((index == 2 || index == 3) && _isSignedIn == false) {
-      // If the user is not signed in and tries to access the saved page, show login screen
+    if ((index == 2 || index == 3) && !_isSignedIn) {
       final result = await Navigator.push(
         context,
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => const SignIn(),
-          
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(0.0, 1.0); // Start from bottom of the screen
-            const end = Offset.zero; // End at the center (no offset)
-            const curve = Curves.easeInOut; // Define a smooth curve
-
-            var tween =
-                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-            var offsetAnimation = animation.drive(tween);
-
-            return SlideTransition(
-              position: offsetAnimation,
-              child: child,
-            );
-          },
-        ),
+        MaterialPageRoute(builder: (context) => const SignIn()),
       );
 
       if (result == true) {
-        // Sign-in was successful, update state
         setState(() {
           _isSignedIn = true;
-          _selectedIndex = index; // go to the selected index if signed in
+          _selectedIndex = index;
         });
-      } else {
-        if(_selectedIndex == 2 || _selectedIndex == 3){
-          setState(() {
-            _selectedIndex = 0;
-          });
-        }
       }
     } else {
       setState(() {
@@ -119,25 +101,18 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex],
+      body: Column(
+        children: [
+          Expanded(child: _pages[_selectedIndex]),
+          NowPlayingBar(),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.explore),
-            label: 'Explore',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark),
-            label: 'Saved',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Explore'),
+          BottomNavigationBarItem(icon: Icon(Icons.bookmark), label: 'Saved'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
         currentIndex: _selectedIndex,
         type: BottomNavigationBarType.fixed,
