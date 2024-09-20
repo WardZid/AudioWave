@@ -1,0 +1,13 @@
+Scaffolds
+
+USe these commands to scaffold the sql server databases into the apropriate backend services.
+
+
+USERS:
+Scaffold-DbContext "Server=tcp:audiowave.database.windows.net,1433;Initial Catalog=dev_UsersDatabase;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication='Active Directory Default';" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -ContextDir Data -Context UsersDbContext -Project UsersService.Infrastructure -StartupProject UsersService.API
+
+
+
+
+METADATA:
+Scaffold-DbContext "Server=tcp:audiowave.database.windows.net,1433;Initial Catalog=dev_MetadataDatabase;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication='Active Directory Default';" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -ContextDir Data -Context MetadataDbContext -Project MetadataService.Infrastructure -StartupProject MetadataService.API
