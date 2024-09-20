@@ -328,8 +328,8 @@ class _AddAudioPageState extends State<AddAudioPage> {
     String s3FilePath = await widget.uploadRepository.uploadChunk(
       audioId,
       chunkNumber, // chunk number (1-based index)
-      totalChunks, // total number of chunks
-      chunkDurationSecs, // chunk duration in seconds
+      totalChunks,
+      chunkDurationSecs,
       multipartFile,
     );
 
@@ -337,11 +337,17 @@ class _AddAudioPageState extends State<AddAudioPage> {
     file.delete(recursive: true);
     ("File Deleted ${file.path}");
 
-    setState(() {
-      if(_uploadProgress< (chunkNumber / totalChunks)){
-        _uploadProgress = (chunkNumber / totalChunks);
+    try {
+      if (mounted) {
+        setState(() {
+          if (_uploadProgress < (chunkNumber / totalChunks)) {
+            _uploadProgress = (chunkNumber / totalChunks);
+          }
+        });
       }
-    });
+    } catch (e) {
+      print("umounted");
+    }
   }
 
   Future<File> cleanMetadata(File file) async {
@@ -357,15 +363,11 @@ class _AddAudioPageState extends State<AddAudioPage> {
 
   Future<void> clearFilePickerCache() async {
     try {
-      // Get the app's temporary directory
       final tempDir = await getTemporaryDirectory();
 
-      // Get the file picker cache directory path (assuming the cached files are stored under "file_picker")
       final filePickerCacheDir = Directory('${tempDir.path}/file_picker');
 
-      // Check if the directory exists
       if (filePickerCacheDir.existsSync()) {
-        // Delete the directory and all its contents
         filePickerCacheDir.deleteSync(recursive: true);
         print('File picker cache cleared.');
       } else {
@@ -374,18 +376,6 @@ class _AddAudioPageState extends State<AddAudioPage> {
     } catch (e) {
       print('Error clearing file picker cache: $e');
     }
-  }
-
-  String formatDuration(int seconds) {
-    int hours = seconds ~/ 3600;
-    int minutes = (seconds % 3600) ~/ 60;
-    int remainingSeconds = seconds % 60;
-
-    String hoursStr = hours.toString().padLeft(2, '0');
-    String minutesStr = minutes.toString().padLeft(2, '0');
-    String secondsStr = remainingSeconds.toString().padLeft(2, '0');
-
-    return "$hoursStr:$minutesStr:$secondsStr";
   }
 
   Widget _buildTag(String tag) {
@@ -595,7 +585,7 @@ class _AddAudioPageState extends State<AddAudioPage> {
                   ],
                 ),
               ),
-              
+
             // Upload Audio Button
             Row(
               children: [

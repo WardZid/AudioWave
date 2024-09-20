@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
       const HomePage(),
       const ExplorePage(),
       const SavedPage(),
-      ProfilePage(onLogout: _handleLogout), // Pass the logout callback
+      ProfilePage(onLogout: _handleLogout), 
     ];
 
   @override
@@ -102,6 +102,12 @@ class _MyHomePageState extends State<MyHomePage> {
           _isSignedIn = true;
           _selectedIndex = index; // go to the selected index if signed in
         });
+      } else {
+        if(_selectedIndex == 2 || _selectedIndex == 3){
+          setState(() {
+            _selectedIndex = 0;
+          });
+        }
       }
     } else {
       setState(() {

@@ -38,11 +38,11 @@ class AudioModel extends Audio {
       id: json['id'],
       title: json['title'],
       description: json['description'],
-      thumbnail: json['thumbnail'] != null ? Uint8List.fromList(List<int>.from(jsonDecode(json['thumbnail']))) : null, // Convert thumbnail to Uint8List
+      thumbnail: json['thumbnail'] != null ? base64Decode(json['thumbnail'])  : null, // Convert thumbnail to Uint8List
       durationSec: json['durationSec'],
       fileSize: json['fileSize'],
       fileType: json['fileType'],
-      //fileChecksum: json['fileChecksum'] != null ? Uint8List.fromList(List<int>.from(json['fileChecksum'])) : null, // Convert checksum to Uint8List
+      fileChecksum: json['fileChecksum'] != null ? base64Decode(json['fileChecksum']) : null, // Convert checksum to Uint8List
       listens: json['listens'],
       statusId: json['statusId'],
       visibilityId: json['visibilityId'],
