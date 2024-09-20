@@ -32,31 +32,50 @@ public class MessageConsumerService : IHostedService, IDisposable
 
     private void InitializeRabbitMq()
     {
-        try
-        {
+        var rabbitMqSettings = _configuration.GetSection("RabbitMQ");
+        var retryCount = 0;
+        var maxRetries = 10; // set it to -1 for infinite retries.
+        var retryDelay = TimeSpan.FromSeconds(10); // retry delay
 
-            var rabbitMqSettings = _configuration.GetSection("RabbitMQ");
-            Console.WriteLine(rabbitMqSettings.ToString());
-            var factory = new ConnectionFactory
-            {
-                HostName = rabbitMqSettings["HostName"],
-                //ClientProvidedName = rabbitMqSettings["ClientProvidedName"],
-                Port = int.Parse(rabbitMqSettings["Port"])
-            };
-            Console.WriteLine(rabbitMqSettings["HostName"]);
-            _connection = factory.CreateConnection();
-            _channel = _connection.CreateModel();
-            _channel.QueueDeclare(rabbitMqSettings["ConsumerQueue"],
-                durable: false,
-                exclusive: false,
-                autoDelete: false,
-                arguments: null);
-        }
-        catch (Exception ex)
+        while (true)
         {
-            throw new Exception($"ERROR: AudioWaveBroker cannot initialize for whatever reason: {ex.Message}", ex);
+            try
+            {
+                Console.WriteLine($"Attempting to connect to RabbitMQ. Attempt #{retryCount + 1}");
+
+                var factory = new ConnectionFactory
+                {
+                    HostName = rabbitMqSettings["HostName"],
+                    Port = int.Parse(rabbitMqSettings["Port"])
+                };
+
+                _connection = factory.CreateConnection();
+                _channel = _connection.CreateModel();
+                _channel.QueueDeclare(rabbitMqSettings["ConsumerQueue"],
+                    durable: false,
+                    exclusive: false,
+                    autoDelete: false,
+                    arguments: null);
+
+                Console.WriteLine("Connected to RabbitMQ successfully.");
+                break; //successful connection
+            }
+            catch (Exception ex)
+            {
+                retryCount++;
+                Console.WriteLine($"ERROR: Failed to connect to RabbitMQ: {ex.Message}");
+
+                if (retryCount == maxRetries)
+                {
+                    throw new Exception("ERROR: Max retry attempts exceeded. Could not connect to RabbitMQ.", ex);
+                }
+
+                Console.WriteLine("Retrying in 10 seconds...");
+                Thread.Sleep(retryDelay); // Wait for the specified retry delay before trying again
+            }
         }
     }
+
 
     public Task StartAsync(CancellationToken cancellationToken)
     {

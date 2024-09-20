@@ -1,17 +1,19 @@
-import 'package:audioplayers/audioplayers.dart';
+import 'package:ffmpeg_kit_flutter/return_code.dart';
+import 'package:flutter/material.dart';
 import 'package:audiowave6/domain/repositories/metadata_repository.dart';
 import 'package:audiowave6/domain/repositories/upload_repository.dart';
+import '../../domain/entities/audio.dart';
+import '../../utils/storage_utils.dart';
 import 'package:crypto/crypto.dart';
-import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
-import '../../domain/entities/audio.dart';
-import '../../utils/storage_utils.dart';
-import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
-
 import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
+import 'package:http_parser/http_parser.dart';
 
 class AddAudioPage extends StatefulWidget {
   final MetadataRepository metadataRepository;
@@ -32,12 +34,14 @@ class _AddAudioPageState extends State<AddAudioPage> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _tagsController = TextEditingController();
 
+  double _uploadProgress = 0.0;
+
   Uint8List? _thumbnail; // image
   String? _thumbnailFileName;
   Uint8List? _fileChecksumBytes;
   int? _fileSize;
   String? _fileType;
-  int _durationSec = 0;
+  //int _durationSec = 0;
   List<int>? _audioBytes;
   PlatformFile? _audioFile;
   String? _audioFileName;
@@ -86,14 +90,14 @@ class _AddAudioPageState extends State<AddAudioPage> {
 
     if (result != null) {
       File file = File(result.files.single.path!);
-      int durationSecs = await _getAudioDuration(file);
+      //int durationSecs = await _getAudioDuration(file);
       setState(() {
         _audioBytes = result.files.single.bytes;
         _audioFile = result.files.single;
         _audioFileName = result.files.single.name; // Save the file name
         _fileSize = result.files.single.size;
         _fileType = result.files.single.extension;
-        _durationSec = durationSecs;
+        //_durationSec = durationSecs;
         _fileChecksumBytes = _generateChecksum(_audioBytes!);
         _isLoading = false;
       });
@@ -152,13 +156,6 @@ class _AddAudioPageState extends State<AddAudioPage> {
       return;
     }
 
-    if (_descriptionController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter the audio description.')),
-      );
-      return;
-    }
-
     if (_audioBytes == null || _audioFile == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Please choose an MP3 file.')),
@@ -172,93 +169,12 @@ class _AddAudioPageState extends State<AddAudioPage> {
         _isLoading = true;
       });
 
-      // Create audio metadata
-      Audio newAudio = Audio(
-        id: 0,
-        title: _titleController.text,
-        description: _descriptionController.text,
-        thumbnail: _thumbnail, // thumbnail can be null
-        durationSec: _durationSec,
-        fileSize: _fileSize,
-        fileType: _fileType,
-        fileChecksum: _fileChecksumBytes,
-        visibilityId: _visibilityId,
-        uploaderId: _uploaderId,
-        tags: _tags,
-      );
-
-      int newAudioId = await widget.metadataRepository.addAudio(newAudio);
-      print(newAudioId);
-
-      String filePath = _audioFile?.path ?? "";
-      final String outputDir = path.dirname(filePath);
-
-      // Splitting the audio into 5 second chunks
-      int chunkDuration = 5; //  in seconds
-        String chunkDurationString = formatDuration(chunkDuration);
-      int totalChunks = (_durationSec / chunkDuration)
-          .ceil(); // Calculate total number of chunks
-
-      String ffmpegCommand = "-i $filePath -f segment -segment_time $chunkDuration chunk_%03d.mp3";
-      print("Executiong FFmpeg Command: $ffmpegCommand");
-      await FFmpegKit.execute(ffmpegCommand);
-
-      for (int chunkNumber = 0; chunkNumber < totalChunks; chunkNumber++) {
-        // String chunkFileName = path.join(outputDir, 'chunk_$chunkNumber.mp3');
-        String chunkFileName = 'chunk_${chunkNumber.toString().padLeft(3, '0')}.mp3';
-        String chunkFilePath = path.join(outputDir, chunkFileName);
-        print(chunkFileName);
-        print(chunkFilePath);
-        // String startTime = (chunkNumber * chunkDuration).toString();
-
-        // FFmpeg command to split audio into chunks
-        // var session = await FFmpegKit.execute(
-        //   '-i $filePath -ss $startTime -t $chunkDuration -c:a libmp3lame -b:a 192k $chunkFileName',
-        // );
-
-
-        // String ffmpegCommand =
-        //     "-i $filePath -ss $startTime -t $chunkDurationString -c copy $chunkFileName";
-        // print("Executiong FFmpeg Command: $ffmpegCommand");
-        // // var session = await FFmpegKit.execute(ffmpegCommand);
-
-        // // final output = await session.getOutput();
-
-        // // // print('FFmpeg Output: $output');
-
-        // Read the chunk into bytes
-        File chunkFile = File(chunkFilePath);
-        Uint8List chunkBytes = await chunkFile.readAsBytes();
-
-        try {
-          http.MultipartFile multipartChunk = http.MultipartFile.fromBytes(
-            'file',
-            chunkBytes,
-            filename: 'chunk_$chunkNumber.mp3',
-          );
-
-          // Upload the chunk
-          await widget.uploadRepository.uploadChunk(
-            newAudioId,
-            chunkNumber + 1, // Chunks are 1-based
-            totalChunks,
-            chunkDuration,
-            multipartChunk,
-          );
-        } catch (e) {
-          print("Error Sending chunk: $e");
-          throw e;
-        } finally {
-          await chunkFile.delete();
-        }
-
-      }
+      await splitAndUpload(_audioFile!);
 
       setState(() {
         _isLoading = false;
       });
 
-      print('Audio uploaded successfully with ID: $newAudioId');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Audio uploaded successfully')),
       );
@@ -274,6 +190,189 @@ class _AddAudioPageState extends State<AddAudioPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to upload audio, please try again')),
       );
+    }
+  }
+
+  Future<int> uploadAudioMetadata(int durationSeconds, String fileType) async {
+    Audio newAudio = Audio(
+      id: 0,
+      title: _titleController.text,
+      description: _descriptionController.text,
+      thumbnail: _thumbnail, // thumbnail can be null
+      durationSec: durationSeconds,
+      fileSize: _fileSize,
+      fileType: fileType,
+      fileChecksum: _fileChecksumBytes,
+      visibilityId: _visibilityId,
+      uploaderId: _uploaderId,
+      tags: _tags,
+    );
+
+    int newAudioId = await widget.metadataRepository.addAudio(newAudio);
+    print('Audio uploaded successfully with ID: $newAudioId');
+    return newAudioId;
+  }
+
+  Future<void> splitAndUpload(PlatformFile mp3File) async {
+    final cleanedFile = await cleanMetadata(File(mp3File.path!));
+
+    final totalDuration = await _getAudioDuration(cleanedFile);
+
+    // totalchunks (each chunk is 5 seconds)
+    final totalChunks = (totalDuration / 5).ceil();
+
+    final audioId = await uploadAudioMetadata(totalDuration, "wav");
+
+    print('Total duration: $totalDuration seconds');
+    print('Total chunks: $totalChunks');
+
+    await splitAndUploadChunks(cleanedFile, 5, totalDuration, audioId,
+        totalChunks); // Process each chunk and upload right away
+  }
+
+  Future<void> splitAndUploadChunks(File mp3File, int chunkDurationSecs,
+      int totalDuration, int audioId, int totalChunks) async {
+    final tempDir = await getTemporaryDirectory();
+    int index = 0;
+    bool splitSuccess = true;
+
+    while (splitSuccess) {
+      final outputPath = '${tempDir.path}/chunk_$index.wav';
+      int startTime = index * chunkDurationSecs;
+
+      if (startTime >= totalDuration) {
+        print("DONE $startTime");
+        break;
+      }
+
+      final command =
+          '-y -i ${mp3File.path} -ss ${startTime} -t $chunkDurationSecs -c:a pcm_s16le $outputPath';
+
+      print("FFmpeg command: $command");
+
+      // Execute FFmpeg command
+      final session = await FFmpegKit.execute(command);
+      final sessionLog = await session.getLogs();
+      final returnCode = await session.getReturnCode();
+
+      sessionLog.forEach((log) {
+        print("FFmpeg log: ${log.getMessage()}");
+      });
+
+      print("Return code: $returnCode");
+
+      if (returnCode != null && returnCode.isValueSuccess()) {
+        final file = File(outputPath);
+        if (file.existsSync()) {
+          try {
+            print("File created successfully at $outputPath");
+
+            // Upload the chunk immediately after creation
+            try {
+              final multipartFile = await http.MultipartFile.fromPath(
+                'audioChunk',
+                file.path,
+                contentType: MediaType('audio', 'wav'),
+              );
+              uploadAndDelete(audioId, index + 1, chunkDurationSecs,
+                  totalChunks, multipartFile, file);
+            } catch (e) {
+              print("Error UPLOAD : $e");
+              throw e;
+            } finally {
+              // file.delete(recursive: true);
+            }
+          } catch (e) {
+            print("Failed to send chunk $index: $e");
+          }
+
+          index++;
+        } else {
+          print("File doesn't exist at path: $outputPath");
+          splitSuccess = false;
+        }
+      } else {
+        print("FFmpeg execution failed or return code was not successful.");
+        final failure = await session.getFailStackTrace();
+        if (failure != null) {
+          print("FFmpeg failure: $failure");
+        }
+        splitSuccess = false;
+      }
+
+      // Stop when all chunks are processed
+      if (index >= totalChunks) {
+        splitSuccess = false;
+      }
+    }
+    // try {
+    //   final dir = Directory(tempDir.path);
+    //   if (dir.existsSync()) {
+    //     dir.deleteSync(
+    //         recursive:
+    //             true); // Recursively delete the directory and its contents
+    //     print("Temporary directory cleared.");
+    //   }
+    // } catch (e) {
+    //   print("Error clearing temporary directory: $e");
+    // }
+  }
+
+  Future<void> uploadAndDelete(
+      int audioId,
+      int chunkNumber,
+      int chunkDurationSecs,
+      int totalChunks,
+      http.MultipartFile multipartFile,
+      File file) async {
+    String s3FilePath = await widget.uploadRepository.uploadChunk(
+      audioId,
+      chunkNumber, // chunk number (1-based index)
+      totalChunks, // total number of chunks
+      chunkDurationSecs, // chunk duration in seconds
+      multipartFile,
+    );
+
+    print(s3FilePath);
+    file.delete(recursive: true);
+    ("File Deleted ${file.path}");
+
+    setState(() {
+      if(_uploadProgress< (chunkNumber / totalChunks)){
+        _uploadProgress = (chunkNumber / totalChunks);
+      }
+    });
+  }
+
+  Future<File> cleanMetadata(File file) async {
+    final tempDir = await getTemporaryDirectory();
+    final outputFilePath =
+        '${tempDir.path}/cleaned_${path.basename(file.path)}';
+
+    await FFmpegKit.execute(
+        '-i ${file.path} -map_metadata -1 -c copy $outputFilePath');
+
+    return File(outputFilePath);
+  }
+
+  Future<void> clearFilePickerCache() async {
+    try {
+      // Get the app's temporary directory
+      final tempDir = await getTemporaryDirectory();
+
+      // Get the file picker cache directory path (assuming the cached files are stored under "file_picker")
+      final filePickerCacheDir = Directory('${tempDir.path}/file_picker');
+
+      // Check if the directory exists
+      if (filePickerCacheDir.existsSync()) {
+        // Delete the directory and all its contents
+        filePickerCacheDir.deleteSync(recursive: true);
+        print('File picker cache cleared.');
+      } else {
+        print('No file picker cache found.');
+      }
+    } catch (e) {
+      print('Error clearing file picker cache: $e');
     }
   }
 
@@ -326,8 +425,7 @@ class _AddAudioPageState extends State<AddAudioPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset:
-          true, // This allows the layout to adjust when the keyboard is open
+      resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -361,7 +459,6 @@ class _AddAudioPageState extends State<AddAudioPage> {
             ),
             const SizedBox(height: 16),
 
-            // Visibility Section with Title and Options
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -477,13 +574,57 @@ class _AddAudioPageState extends State<AddAudioPage> {
             ),
             const SizedBox(height: 16),
 
+            //show progress
+            if (_isLoading)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: Column(
+                  children: [
+                    const Text('Uploading...'),
+                    LinearProgressIndicator(
+                      value: _uploadProgress,
+                      backgroundColor: Colors.grey[300],
+                      color: Colors.green,
+                      minHeight: 10,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      '${(_uploadProgress * 100).toStringAsFixed(0)}% completed',
+                      style: const TextStyle(fontSize: 16, color: Colors.black),
+                    ),
+                  ],
+                ),
+              ),
+              
             // Upload Audio Button
             Row(
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: _uploadAudio,
-                    child: const Text('Upload Audio'),
+                    onPressed: _isLoading
+                        ? null
+                        : _uploadAudio, // Disable button while loading
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _isLoading
+                          ? Colors.grey
+                          : Colors
+                              .purple, // Optional: change color when disabled
+                    ),
+                    child: _isLoading
+                        ? const Text(
+                            'Uploading...',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18),
+                          )
+                        : const Text(
+                            'Upload Audio',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18),
+                          ),
                   ),
                 ),
               ],
