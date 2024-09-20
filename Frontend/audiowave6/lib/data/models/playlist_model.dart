@@ -28,7 +28,7 @@ class PlaylistModel extends Playlist {
       audioIds: Set<int>.from(json['audioIds']),
       creationDate: DateTime.parse(json['creationDate']),
       updateDate: DateTime.parse(json['updateDate']),
-      accessLevel: AccessLevel.values.firstWhere((e) => e.toString() == 'AccessLevel.${json['accessLevel']}'),
+      accessLevel: new AccessLevel( key: "",value: json['accessLevel']),
     );
   }
 
@@ -40,7 +40,7 @@ class PlaylistModel extends Playlist {
       'audioIds': audioIds.toList(),
       'creationDate': creationDate.toIso8601String(),
       'updateDate': updateDate.toIso8601String(),
-      'accessLevel': accessLevel.toString().split('.').last,
+      'accessLevel': accessLevel.toJson(),
     };
   }
 }

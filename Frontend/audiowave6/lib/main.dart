@@ -10,7 +10,7 @@ import 'view/Helpers/now_playing_bar.dart';
 import 'view/Home.dart';
 import 'view/secondary/Login.dart';
 import 'view/Explore.dart';
-import 'view/Saved.dart';
+import 'view/PlaylistsPage.dart';
 import 'view/Profile.dart';
 
 void main() {
@@ -55,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late final List<Widget> _pages = <Widget>[
     const HomePage(),
     const ExplorePage(),
-    const SavedPage(),
+    PlaylistsPage(),
     ProfilePage(onLogout: _handleLogout),
   ];
 
@@ -111,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Explore'),
-          BottomNavigationBarItem(icon: Icon(Icons.bookmark), label: 'Saved'),
+          BottomNavigationBarItem(icon: Icon(Icons.bookmark), label: 'Playlists'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
         currentIndex: _selectedIndex,

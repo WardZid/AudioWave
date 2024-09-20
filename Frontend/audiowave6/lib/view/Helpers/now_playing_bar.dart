@@ -27,11 +27,14 @@ class NowPlayingBar extends StatelessWidget {
 
         return GestureDetector(
           onTap: () {
-            // Navigate to the AudioPlayerPage
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AudioPlayerPage(audio: currentAudio),
+            // Open AudioPlayerPage as a modal bottom sheet
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (context) => FractionallySizedBox(
+                heightFactor: 0.95, // Cover 90% of the screen height
+                child: AudioPlayerPage(audio: currentAudio),
               ),
             );
           },

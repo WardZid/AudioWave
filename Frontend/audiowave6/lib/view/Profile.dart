@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../data/repositories/auth_repository_impl.dart';
 import '../data/repositories/metadata_repository_impl.dart';
-import '../data/repositories/playback_repository_impl.dart';
 import '../domain/entities/audio.dart';
 import '../domain/entities/user.dart';
 import '../utils/storage_utils.dart';
 import '../view/secondary/AddAudio.dart';
 import 'Helpers/audio_tile.dart';
-import 'secondary/AudioPlayerPage.dart';
 
 class ProfilePage extends StatefulWidget {
   final VoidCallback onLogout;

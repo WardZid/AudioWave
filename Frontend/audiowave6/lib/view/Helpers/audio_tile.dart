@@ -25,10 +25,14 @@ class AudioTile extends StatelessWidget {
         final audioPlayerService = AudioPlayerService();
         audioPlayerService.playAudio(audio);
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AudioPlayerPage(audio: audio),
+        // Open AudioPlayerPage as a modal bottom sheet
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => FractionallySizedBox(
+            heightFactor: 0.95,
+            child: AudioPlayerPage(audio: audio),
           ),
         );
       },

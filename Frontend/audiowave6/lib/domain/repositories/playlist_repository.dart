@@ -4,7 +4,7 @@ import '../entities/access_level.dart';
 abstract class PlaylistRepository {
   Future<List<Playlist>> getAll();
   Future<Playlist> getById(String id);
-  Future<Playlist> getByUploaderId(int uploaderId);
+  Future<List<Playlist>> getByUploaderId(int uploaderId);
   Future<String> createPlaylist(Playlist playlist);
   Future<void> updatePlaylist(Playlist playlist);
   Future<void> deletePlaylist(String playlistId);
