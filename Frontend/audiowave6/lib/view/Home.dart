@@ -1,69 +1,70 @@
 import 'package:flutter/material.dart';
-import 'package:audiowave6/view/Helpers/GeneralHelpers/AppBar.dart';
-import 'package:audiowave6/view/Helpers/GeneralHelpers/Blocks.dart';
+import 'package:http/http.dart' as http;
+
+import '../data/repositories/metadata_repository_impl.dart';
+import '../domain/entities/audio.dart';
+import 'Helpers/audio_tile.dart';
+
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({Key? key}) : super(key: key); // Updated to use Key
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  List AudiNames = ['test1', 'test2', 'test3'];
-  List CreatorNames = ['test1', 'test2', 'test3'];
-  List descriptions = ['test1', 'test2', 'test3'];
-  List Durations = ['test1', 'test2', 'test3'];
-  List Listening = [10, 20, 30];
-  List UploadDate = ['test1', 'test2', 'test3'];
-  List Sizes = [10, 20, 30]; // Sizes for the container
-  List Types = ['test1', 'test2', 'test3'];
-  List imagePaths = ['assets/BG1.jpg', 'assets/BG2.jpg', 'assets/BG3.jpg']; // Images for the audio files
-  int len = 0;
-  bool show = false;
+  final metadataRepository = MetadataRepositoryImpl(http.Client());
+  late Future<List<Audio>> _audiosFuture;
 
   @override
   void initState() {
     super.initState();
-    len = AudiNames.length;
+    _audiosFuture = _fetchAudios();
+  }
+
+  Future<List<Audio>> _fetchAudios() async {
+    try {
+      List<Audio> audios = await metadataRepository.getAllAudios();
+      audios.shuffle(); // Scramble the list
+      return audios;
+    } catch (e) {
+      print('Error fetching audios: $e');
+      return [];
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarC(context, 'Audio Wave', 30),
-      body: Stack(
-        children: [
-          GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 1,
-            ),
-            itemCount: len,
-            itemBuilder: (BuildContext context, int index) {
-              return AudioBlockHelper.buildAudioBlock(
-                audioName: AudiNames[index],
-                creatorName: CreatorNames[index],
-                description: descriptions[index],
-                duration: Durations[index],
-                listening: Listening[index],
-                uploadDate: UploadDate[index],
-                size: Sizes[index],
-                type: Types[index],
-                showDetails: show,
-                imagePath: imagePaths[index], // Passing the image path
-                containerHeight: Sizes[index].toDouble(), // Passing the size as height
-                onTap: () {
-                  // handle tap event
-                },
-                onDoubleTap: () {
-                  setState(() {
-                    show = !show;
-                  });
-                },
-              );
-            },
-          ),
-        ],
+      appBar: AppBar(
+        title: Text('AudioWave'),
+      ),
+      body: FutureBuilder<List<Audio>>(
+        future: _audiosFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // While the future is loading, show a loading indicator
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            // If an error occurred, display an error message
+            return Center(child: Text('Failed to load audios'));
+          } else {
+            // When data is available, display the list of audios
+            final audios = snapshot.data ?? [];
+
+            if (audios.isEmpty) {
+              return Center(child: Text('No audios available'));
+            }
+
+            return ListView.builder(
+              itemCount: audios.length,
+              itemBuilder: (context, index) {
+                return AudioTile(audio: audios[index]);
+              },
+            );
+          }
+        },
       ),
     );
   }

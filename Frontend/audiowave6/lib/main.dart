@@ -60,8 +60,8 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _isSignedIn = false;
 
   late final List<Widget> _pages = <Widget>[
-    const HomePage(),
-    const ExplorePage(),
+    HomePage(),
+    //const ExplorePage(),
     PlaylistsPage(),
     ProfilePage(onLogout: _handleLogout),
   ];
@@ -86,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onItemTapped(int index) async {
     _isSignedIn = await widget.authRepository.isSignedIn();
-    if ((index == 2 || index == 3) && !_isSignedIn) {
+    if ((index == 1 || index == 2) && !_isSignedIn) {
       final result = await Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const SignIn()),
@@ -118,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
         items: const <
         BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Explore'),
+          //BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Explore'),
           BottomNavigationBarItem(icon: Icon(Icons.playlist_play_rounded), label: 'Playlists'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],

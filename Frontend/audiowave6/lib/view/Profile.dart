@@ -144,30 +144,36 @@ class _ProfilePageState extends State<ProfilePage> {
 
             // button to upload new audio
             SizedBox(
-              width: double.infinity, // full width
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true, //allow full-screen if needed
-                    builder: (BuildContext context) {
-                      return AddAudioPage(
-                        metadataRepository:
-                            new MetadataRepositoryImpl(http.Client()),
-                        uploadRepository:
-                            new UploadRepositoryImpl(http.Client()),
-                      );
-                    },
-                  );
-                },
-                icon: const Icon(Icons.audiotrack),
-                label: const Text('Add New Audio'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  textStyle: const TextStyle(fontSize: 18),
-                ),
-              ),
-            ),
+  width: double.infinity, // full width
+  child: ElevatedButton.icon(
+    onPressed: () async {
+      final result = await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true, // Allow full-screen if needed
+        builder: (BuildContext context) {
+          return AddAudioPage(
+            metadataRepository: MetadataRepositoryImpl(http.Client()),
+            uploadRepository: UploadRepositoryImpl(http.Client()),
+          );
+        },
+      );
+
+      // Check if an audio was added
+      if (result == true) {
+        // Refresh the audio list
+        setState(() {
+          audioListFuture = fetchAudioList();
+        });
+      }
+    },
+    icon: const Icon(Icons.audiotrack),
+    label: const Text('Add New Audio'),
+    style: ElevatedButton.styleFrom(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      textStyle: const TextStyle(fontSize: 18),
+    ),
+  ),
+),
 
             const SizedBox(height: 24),
 
