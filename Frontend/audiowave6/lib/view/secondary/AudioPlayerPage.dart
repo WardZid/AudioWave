@@ -25,7 +25,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
   final audioPlayerService = AudioPlayerService();
   final likeRepository = LikeRepositoryImpl(http.Client());
   late Stream<DurationState> _durationStateStream;
-  
+
   bool isLiked = false;
 
   @override
@@ -42,33 +42,35 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
       audioPlayerService.playAudio(widget.audio);
     }
   }
-Future<void> _checkIfLiked() async {
-  try {
-    bool liked = await likeRepository.isLiked(widget.audio.id);
-    setState(() {
-      isLiked = liked;
-    });
-  } catch (e) {
-    print('Error checking if liked: $e');
-  }
-}
-Future<void> _toggleLike() async {
-  try {
-    if (isLiked) {
-      await likeRepository.removeLike(widget.audio.id);
-    } else {
-      await likeRepository.addLike(widget.audio.id);
+
+  Future<void> _checkIfLiked() async {
+    try {
+      bool liked = await likeRepository.isLiked(widget.audio.id);
+      setState(() {
+        isLiked = liked;
+      });
+    } catch (e) {
+      print('Error checking if liked: $e');
     }
-    setState(() {
-      isLiked = !isLiked;
-    });
-  } catch (e) {
-    print('Error toggling like: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Failed to update like status')),
-    );
   }
-}
+
+  Future<void> _toggleLike() async {
+    try {
+      if (isLiked) {
+        await likeRepository.removeLike(widget.audio.id);
+      } else {
+        await likeRepository.addLike(widget.audio.id);
+      }
+      setState(() {
+        isLiked = !isLiked;
+      });
+    } catch (e) {
+      print('Error toggling like: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update like status')),
+      );
+    }
+  }
 
   // Helper method to format duration in mm:ss
   String _formatDuration(Duration duration) {
@@ -77,7 +79,6 @@ Future<void> _toggleLike() async {
 
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -154,6 +155,23 @@ Future<void> _toggleLike() async {
                                 style: const TextStyle(fontSize: 16),
                                 textAlign: TextAlign.center,
                               ),
+                            const SizedBox(height: 8),
+                            // Listens/Views count
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.visibility,
+                                    size: 16, color: Colors.grey),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${widget.audio.listens ?? 0} views',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
                             const SizedBox(height: 16),
                             // Progress bar
                             StreamBuilder<DurationState>(
@@ -208,7 +226,8 @@ Future<void> _toggleLike() async {
                                   stream: audioPlayerService.playerStateStream,
                                   builder: (context, snapshot) {
                                     final playerState = snapshot.data;
-                                    final isPlaying = playerState?.playing ?? false;
+                                    final isPlaying =
+                                        playerState?.playing ?? false;
                                     return IconButton(
                                       iconSize: 64,
                                       icon: Icon(
@@ -247,7 +266,7 @@ Future<void> _toggleLike() async {
                                       ? Icons.favorite
                                       : Icons.favorite_border),
                                   color: isLiked ? Colors.red : Colors.black,
-                                  onPressed:  _toggleLike,
+                                  onPressed: _toggleLike,
                                 ),
                                 const SizedBox(width: 32),
                                 IconButton(
@@ -273,89 +292,90 @@ Future<void> _toggleLike() async {
     );
   }
 
-
-void _showAddToPlaylistDialog() {
-  showDialog(
-    context: context,
-    builder: (context) {
-      final playlistService = PlaylistService(PlaylistRepositoryImpl(http.Client()));
-      return FutureBuilder<List<Playlist>>(
-        future: playlistService.getUserPlaylists(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return AlertDialog(
-              title: Text('Error'),
-              content: Text('Failed to load playlists'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text('Close'),
-                ),
-              ],
-            );
-          }
-
-          final playlists = snapshot.data ?? [];
-
-          return AlertDialog(
-            title: Text('Add to Playlist'),
-            content: SizedBox(
-              width: double.maxFinite,
-              child: ListView(
-                shrinkWrap: true,
-                children: [
-                  ListTile(
-                    leading: Icon(Icons.add),
-                    title: Text('Create New Playlist'),
-                    onTap: () async {
-                      Navigator.pop(context); // Close the current dialog
-                      final result = await showDialog(
-                        context: context,
-                        builder: (context) => CreatePlaylistDialog(
-                          playlistService: playlistService,
-                        ),
-                      );
-                      if (result == true) {
-                        // Refresh playlists or show success message
-                      }
-                    },
+  void _showAddToPlaylistDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        final playlistService =
+            PlaylistService(PlaylistRepositoryImpl(http.Client()));
+        return FutureBuilder<List<Playlist>>(
+          future: playlistService.getUserPlaylists(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return AlertDialog(
+                title: Text('Error'),
+                content: Text('Failed to load playlists'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text('Close'),
                   ),
-                  ...playlists.map((playlist) {
-                    return ListTile(
-                      title: Text(playlist.playlistName),
+                ],
+              );
+            }
+
+            final playlists = snapshot.data ?? [];
+
+            return AlertDialog(
+              title: Text('Add to Playlist'),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: ListView(
+                  shrinkWrap: true,
+                  children: [
+                    ListTile(
+                      leading: Icon(Icons.add),
+                      title: Text('Create New Playlist'),
                       onTap: () async {
-                        try {
-                          await playlistService.addAudioToPlaylist(
-                            playlist.id,
-                            widget.audio.id,
-                          );
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Added to ${playlist.playlistName}')),
-                          );
-                        } catch (e) {
-                          // Handle error
-                          print('Error adding to playlist: $e');
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Failed to add to playlist')),
-                          );
+                        Navigator.pop(context); // Close the current dialog
+                        final result = await showDialog(
+                          context: context,
+                          builder: (context) => CreatePlaylistDialog(
+                            playlistService: playlistService,
+                          ),
+                        );
+                        if (result == true) {
+                          // Refresh playlists or show success message
                         }
                       },
-                    );
-                  }).toList(),
-                ],
+                    ),
+                    ...playlists.map((playlist) {
+                      return ListTile(
+                        title: Text(playlist.playlistName),
+                        onTap: () async {
+                          try {
+                            await playlistService.addAudioToPlaylist(
+                              playlist.id,
+                              widget.audio.id,
+                            );
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content:
+                                      Text('Added to ${playlist.playlistName}')),
+                            );
+                          } catch (e) {
+                            // Handle error
+                            print('Error adding to playlist: $e');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Failed to add to playlist')),
+                            );
+                          }
+                        },
+                      );
+                    }).toList(),
+                  ],
+                ),
               ),
-            ),
-          );
-        },
-      );
-    },
-  );
-}
-
+            );
+          },
+        );
+      },
+    );
+  }
 }
 
 // Helper class to hold position and total duration
