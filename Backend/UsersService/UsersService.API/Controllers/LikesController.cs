@@ -76,6 +76,7 @@ public class LikesController(
         return BadRequest();
     }
 
+    [Authorize]
     [HttpGet("GetAll")]
     public async Task<ActionResult<List<Like>>> GetAll()
     {

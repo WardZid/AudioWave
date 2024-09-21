@@ -5,8 +5,8 @@ import '../services/playlist_service.dart';
 import '../domain/entities/playlist.dart';
 import '../data/repositories/playlist_repository_impl.dart';
 import 'package:http/http.dart' as http;
-
 import 'Helpers/create_playlist_dialog.dart';
+import 'Helpers/playlist_card.dart';
 import 'secondary/PlaylistDetailPage.dart';
 
 class PlaylistsPage extends StatefulWidget {
@@ -44,58 +44,53 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
             itemCount: playlists.length,
             itemBuilder: (context, index) {
               final playlist = playlists[index];
-              return ListTile(
-                title: Text(playlist.playlistName),
-                subtitle: Text('Created on ${playlist.creationDate.toLocal()}'),
-                trailing: IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () async {
-                    // Confirm deletion
-                    final confirm = await showDialog<bool>(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text('Delete Playlist'),
-                        content: Text(
-                            'Are you sure you want to delete this playlist?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, false),
-                            child: Text('Cancel'),
-                          ),
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, true),
-                            child: Text('Delete'),
-                          ),
-                        ],
-                      ),
-                    );
-                    if (confirm == true) {
-                      try {
-                        await playlistService.deletePlaylist(playlist.id);
-                        setState(() {}); // Refresh the list
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Playlist deleted')),
-                        );
-                      } catch (e) {
-                        // Handle error
-                        print('Error deleting playlist: $e');
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Failed to delete playlist')),
-                        );
-                      }
-                    }
-                  },
-                ),
+              return PlaylistCard(
+                playlist: playlist,
                 onTap: () {
+                  // Navigate to Playlist Detail Page
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => PlaylistDetailPage(
-                        playlist:
-                            playlist, // Pass the actual playlist object here
+                        playlist: playlist,
                       ),
                     ),
                   );
+                },
+                onDelete: () async {
+                  // Confirm Deletion
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('Delete Playlist'),
+                      content: Text('Are you sure you want to delete this playlist?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: Text('Delete'),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (confirm == true) {
+                    try {
+                      await playlistService.deletePlaylist(playlist.id);
+                      setState(() {}); // Refresh the list
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Playlist deleted')),
+                      );
+                    } catch (e) {
+                      // Handle error
+                      print('Error deleting playlist: $e');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Failed to delete playlist')),
+                      );
+                    }
+                  }
                 },
               );
             },
