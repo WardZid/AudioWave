@@ -47,11 +47,13 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
               return PlaylistCard(
                 playlist: playlist,
                 onTap: () {
-                  // Navigate to Playlist Detail Page
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PlaylistDetailPage(
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => FractionallySizedBox(
+                      heightFactor: 0.9, 
+                      child: PlaylistDetailPage(
                         playlist: playlist,
                       ),
                     ),
@@ -63,7 +65,8 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
                     context: context,
                     builder: (context) => AlertDialog(
                       title: Text('Delete Playlist'),
-                      content: Text('Are you sure you want to delete this playlist?'),
+                      content: Text(
+                          'Are you sure you want to delete this playlist?'),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context, false),

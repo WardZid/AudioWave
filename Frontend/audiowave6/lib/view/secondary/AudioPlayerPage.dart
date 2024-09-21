@@ -90,7 +90,7 @@ Future<void> _toggleLike() async {
         children: [
           // Background color
           Container(
-            color: Colors.transparent, // Set your desired background color
+            color: Colors.transparent,
           ),
           Column(
             children: [
