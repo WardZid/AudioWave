@@ -49,7 +49,7 @@ namespace MetadataService.Infrastructure.Repositories
 
         public async Task<IEnumerable<Listen>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _context.Set<Listen>().ToListAsync();
         }
 
         public async Task<Listen?> GetByIdAsync(int id)

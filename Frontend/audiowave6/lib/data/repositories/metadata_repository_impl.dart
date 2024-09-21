@@ -197,7 +197,7 @@ class MetadataRepositoryImpl implements MetadataRepository {
   Future<List<Listen>> getUserListenHistory(int userId) async {
     String? token = await StorageUtils.getToken();
     final response = await client.get(
-      Uri.parse('$baseUrl/UserListenHistory?userId=$userId'),
+      Uri.parse('$baseUrl/UserListenHistory?UserId=$userId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',

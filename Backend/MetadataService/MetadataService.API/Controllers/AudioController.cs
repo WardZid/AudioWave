@@ -228,7 +228,7 @@ namespace MetadataService.API.Controllers
 
         [Authorize]
         [HttpGet("UserListenHistory")]
-        public async Task<IActionResult> GetUserListenHistory([FromQuery] int UserId)
+        public async Task<IActionResult> GetUserListenHistory()
         {
             try
             {
