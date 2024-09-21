@@ -105,4 +105,29 @@ public class LikesController(
         }
 
     }
+
+    [Authorize]
+    [HttpGet("IsLiked")]
+    public async Task<IActionResult> GetIsLiked([FromQuery] int audioId)
+    {
+        try
+        {
+
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User ID not found in token.");
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            return Ok(await _likeService.IsLiked(audioId, userId));
+        }
+        catch (Exception ex)
+        {
+
+            return BadRequest(ex.Message);
+        }
+    }
 }

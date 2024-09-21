@@ -64,4 +64,12 @@ public class LikeService(
     {
         return await _likeRepository.GetLikesByUserIdAsync(userId);
     }
+
+    public async Task<bool> IsLiked(int audioId, int userId)
+    {
+        List<Like> likes = await _likeRepository.GetLikesByUserIdAsync(userId);
+        bool isLiked = likes.Where(l => l.AudioId == audioId).Any();
+
+        return isLiked;
+    }
 }

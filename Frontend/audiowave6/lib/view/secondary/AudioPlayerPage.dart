@@ -1,6 +1,7 @@
 // audio_player_page.dart
 
 import 'package:flutter/material.dart';
+import '../../data/repositories/like_repository_impl.dart';
 import '../../data/repositories/playlist_repository_impl.dart';
 import '../../domain/entities/audio.dart';
 import '../../domain/entities/playlist.dart';
@@ -22,13 +23,15 @@ class AudioPlayerPage extends StatefulWidget {
 
 class _AudioPlayerPageState extends State<AudioPlayerPage> {
   final audioPlayerService = AudioPlayerService();
+  final likeRepository = LikeRepositoryImpl(http.Client());
   late Stream<DurationState> _durationStateStream;
+  
   bool isLiked = false;
 
   @override
   void initState() {
     super.initState();
-
+    _checkIfLiked();
     // Use the cumulative position stream and total duration from the audioPlayerService
     _durationStateStream = audioPlayerService.positionStream.map(
       (position) => DurationState(position, audioPlayerService.totalDuration),
@@ -39,6 +42,42 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
       audioPlayerService.playAudio(widget.audio);
     }
   }
+Future<void> _checkIfLiked() async {
+  try {
+    bool liked = await likeRepository.isLiked(widget.audio.id);
+    setState(() {
+      isLiked = liked;
+    });
+  } catch (e) {
+    print('Error checking if liked: $e');
+  }
+}
+Future<void> _toggleLike() async {
+  try {
+    if (isLiked) {
+      await likeRepository.removeLike(widget.audio.id);
+    } else {
+      await likeRepository.addLike(widget.audio.id);
+    }
+    setState(() {
+      isLiked = !isLiked;
+    });
+  } catch (e) {
+    print('Error toggling like: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to update like status')),
+    );
+  }
+}
+
+  // Helper method to format duration in mm:ss
+  String _formatDuration(Duration duration) {
+    final minutes = duration.inMinutes;
+    final seconds = duration.inSeconds % 60;
+
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +99,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(20), // Rounded top corners
+                      top: Radius.circular(25), // Rounded top corners
                     ),
                   ),
                   child: Column(
@@ -208,12 +247,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
                                       ? Icons.favorite
                                       : Icons.favorite_border),
                                   color: isLiked ? Colors.red : Colors.black,
-                                  onPressed: () {
-                                    setState(() {
-                                      isLiked = !isLiked;
-                                    });
-                                    // TODO: Handle like action (e.g., update database or call API)
-                                  },
+                                  onPressed:  _toggleLike,
                                 ),
                                 const SizedBox(width: 32),
                                 IconButton(
@@ -239,17 +273,6 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
     );
   }
 
-  // Helper method to format duration in mm:ss
-  String _formatDuration(Duration duration) {
-    final minutes = duration.inMinutes;
-    final seconds = duration.inSeconds % 60;
-
-    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-  }
-
-  // Method to show add to playlist dialog
- 
- // Inside audio_player_page.dart
 
 void _showAddToPlaylistDialog() {
   showDialog(

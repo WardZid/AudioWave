@@ -257,7 +257,7 @@ namespace MetadataService.API.Controllers
             try
             {
 
-                var listenHistory = await _audioService.GetAllListensByAudio(audioId)
+                var listenHistory = await _audioService.GetAllListensByAudio(audioId);
                 return Ok(listenHistory);
 
             }

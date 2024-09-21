@@ -13,5 +13,6 @@ namespace UsersService.Service.IService
         Task<bool> AddLike(int userId, int audioId);
         Task<bool> RemoveLike(int userId, int audioId);
         Task<List<Like>> GetAllLikes(int userId);
+        Task<bool> IsLiked(int audioId, int userId);
     }
 }

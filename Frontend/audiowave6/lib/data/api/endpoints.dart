@@ -11,6 +11,11 @@ class Endpoints {
   static const String checkUsernameUrl = '$baseUrl/users/auth/check-username';
   static const String checkEmailUrl = '$baseUrl/users/auth/check-email';
 
+  //UserServiceEndpoints
+  static const String likesUrl = '$baseUrl/users/likes';
+  static const String followUrl = '$baseUrl/users/follow';
+
+
   // MetadataService Endpoints
   static const String audioMetadataUrl = '$baseUrl/metadata/audio';
 
