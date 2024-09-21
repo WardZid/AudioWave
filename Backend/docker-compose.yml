@@ -1,0 +1,93 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    container_name: rabbitmq_container
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"   # RabbitMQ default port
+      - "15672:15672" # RabbitMQ management UI
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend-network
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+      RABBITMQ_LOGS: "-"                # Print logs to stdout
+      RABBITMQ_LOG_LEVEL: "debug"       # Set log level to debug for detailed logs
+
+  users_service:
+    build: ./UsersService
+    container_name: users_service_container
+    environment:
+      - USERSDB_CONN=Server=<your users db connection string>
+      - JWT_SECRET=<your jwt secret>
+      - MONGO_CRED_SECRET_CONN=<your mongodb credential store connection string>
+    ports:
+      - "8001:8080"
+    depends_on:
+      - rabbitmq
+    networks:
+      - backend-network
+
+  metadata_service:
+    build: ./MetadataService
+    container_name: metadata_service_container
+    environment:
+      - METADATADB_CONN=<your metadata db connection string>
+      - JWT_SECRET=<your jwt secret>
+    ports:
+      - "8002:8080"
+    depends_on:
+      - rabbitmq
+    networks:
+      - backend-network
+
+  audiofile_service:
+    build: ./AudioFileService
+    container_name: audiofile_service_container
+    environment:
+      - AWS_ACCESS_KEY_ID=< your aws access key >
+      - AWS_SECRET_ACCESS_KEY=<your aws secret key>
+      - JWT_SECRET=<your jwt secret>
+    ports:
+      - "8003:8080"
+    depends_on:
+      - rabbitmq
+    networks:
+      - backend-network
+
+  playlist_service:
+    build: ./PlaylistService
+    container_name: playlist_service_container
+    environment:
+      - JWT_SECRET=<your jwt secret>
+      - PLAYLIST_CONN=<your mongodb playlist connection string>
+    ports:
+      - "8004:8080"
+    depends_on:
+      - rabbitmq
+    networks:
+      - backend-network
+
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - users_service
+      - metadata_service
+      - audiofile_service
+    networks:
+      - backend-network
+
+networks:
+  backend-network:
+    driver: bridge
