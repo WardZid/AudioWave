@@ -1,4 +1,5 @@
 // audio_player_service.dart
+import 'package:audiowave6/domain/repositories/metadata_repository.dart';
 import 'package:just_audio/just_audio.dart';
 import 'dart:typed_data';
 import 'package:rxdart/rxdart.dart';
@@ -18,19 +19,29 @@ class AudioPlayerService {
   final ConcatenatingAudioSource _playlist = ConcatenatingAudioSource(children: []);
   Audio? _currentAudio;
   PlaybackRepository? _playbackRepository;
+  MetadataRepository? _metadataRepository;
 
   int _currentChunkIndex = 1; // Start from 1 instead of 0
   late int _totalChunks;
   bool _isFetching = false;
 
-  void initialize(PlaybackRepository playbackRepository) {
+  void initialize(PlaybackRepository playbackRepository,MetadataRepository metadataRepository) {
     _playbackRepository = playbackRepository;
+    _metadataRepository = metadataRepository;
   }
 
   Future<void> playAudio(Audio audio) async {
     _currentAudio = audio;
 
     if (_playbackRepository == null) return;
+
+    try {
+      if(_metadataRepository != null){
+        _metadataRepository?.getAudioForListen(audio.id);
+      }
+    } catch (e) {
+      print("Couldnt fetch audio for listen");
+    }
 
     // Reset state
     _playlist.clear();
@@ -76,14 +87,12 @@ class AudioPlayerService {
         final audioUri = Uri.dataFromBytes(chunkData, mimeType: 'audio/wav');
         final audioSource = AudioSource.uri(audioUri);
 
-        // Append the chunk to the playlist
         _playlist.add(audioSource);
 
         _currentChunkIndex++;
         chunksToFetch--;
       } catch (e) {
         print('Error fetching chunk $_currentChunkIndex: $e');
-        // Handle error (e.g., retry logic or break)
         break;
       }
     }

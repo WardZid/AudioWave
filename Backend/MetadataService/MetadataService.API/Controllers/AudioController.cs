@@ -225,5 +225,46 @@ namespace MetadataService.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Authorize]
+        [HttpGet("UserListenHistory")]
+        public async Task<IActionResult> GetUserListenHistory([FromQuery] int UserId)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null)
+                {
+                    return Unauthorized("User ID not found in token.");
+                }
+
+                int userId = int.Parse(userIdClaim.Value);
+
+
+                var listenHistory = await _audioService.GetAllListensByUser(userId);
+                return Ok(listenHistory);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("AudioListenHistory")]
+        public async Task<IActionResult> GetAudioListenHistory([FromQuery] int audioId)
+        {
+            try
+            {
+
+                var listenHistory = await _audioService.GetAllListensByAudio(audioId)
+                return Ok(listenHistory);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

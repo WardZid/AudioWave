@@ -1,4 +1,5 @@
 import '../entities/audio.dart';
+import '../entities/listen.dart';
 import '../entities/status.dart';
 import '../entities/visibility.dart';
 
@@ -12,4 +13,7 @@ abstract class MetadataRepository {
   Future<bool> deleteAudio(int id);
   Future<List<Status>> getStatuses();
   Future<List<Visibility>> getVisibilities();
+
+  Future<List<Listen>> getUserListenHistory(int userId);
+  Future<List<Listen>> getAudioListenHistory(int audioId);
 }

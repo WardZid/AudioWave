@@ -1,4 +1,6 @@
 // main.dart
+import 'package:audiowave6/data/repositories/metadata_repository_impl.dart';
+import 'package:audiowave6/domain/repositories/metadata_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'data/repositories/auth_repository_impl.dart';
@@ -15,9 +17,14 @@ import 'view/Profile.dart';
 
 void main() {
   final AuthRepository authRepository = AuthRepositoryImpl(http.Client());
-  final PlaybackRepository playbackRepository = PlaybackRepositoryImpl(http.Client());
+  
+  final PlaybackRepository playbackRepository =
+      PlaybackRepositoryImpl(http.Client());
+  final MetadataRepository metadataRepository =
+      MetadataRepositoryImpl(http.Client());
+
   final audioPlayerService = AudioPlayerService();
-  audioPlayerService.initialize(playbackRepository);
+  audioPlayerService.initialize(playbackRepository, metadataRepository);
 
   runApp(MainApp(authRepository: authRepository));
 }
@@ -111,7 +118,8 @@ class _MyHomePageState extends State<MyHomePage> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Explore'),
-          BottomNavigationBarItem(icon: Icon(Icons.bookmark), label: 'Playlists'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.bookmark), label: 'Playlists'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
         currentIndex: _selectedIndex,

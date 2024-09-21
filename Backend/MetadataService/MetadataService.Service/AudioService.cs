@@ -183,5 +183,16 @@ namespace MetadataService.Service
             Audio resultAudio = await _audioRepository.UpdateAsync(audio, userId);
             return resultAudio.StatusId == newStatus.Id;
         }
+
+        public async  Task<IEnumerable<Listen>> GetAllListensByAudio(int audioId)
+        {
+            return (await _listenRepository.GetAllAsync()).Where(l => l.AudioId == audioId); ;
+        }
+
+        public async Task<IEnumerable<Listen>> GetAllListensByUser(int userId)
+        {
+            return (await _listenRepository.GetAllAsync()).Where(l => l.UserId == userId);
+        }
+
     }
 }

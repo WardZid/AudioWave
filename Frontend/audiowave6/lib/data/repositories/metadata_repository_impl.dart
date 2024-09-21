@@ -2,11 +2,13 @@ import 'package:audiowave6/data/api/endpoints.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../domain/entities/audio.dart';
+import '../../domain/entities/listen.dart';
 import '../../domain/entities/status.dart';
 import '../../domain/entities/visibility.dart';
 import '../../domain/repositories/metadata_repository.dart';
 import '../../utils/storage_utils.dart';
 import '../models/audio_model.dart';
+import '../models/listen_model.dart';
 import '../models/status_model.dart';
 import '../models/visibility_model.dart';
 
@@ -189,6 +191,43 @@ class MetadataRepositoryImpl implements MetadataRepository {
           .toList();
     } else {
       throw Exception('Failed to load visibilities');
+    }
+  }
+  @override
+  Future<List<Listen>> getUserListenHistory(int userId) async {
+    String? token = await StorageUtils.getToken();
+    final response = await client.get(
+      Uri.parse('$baseUrl/UserListenHistory?userId=$userId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body) as List;
+      return data.map((item) => ListenModel.fromJson(item)).toList();
+    } else {
+      throw Exception('Failed to load user listen history');
+    }
+  }
+
+  @override
+  Future<List<Listen>> getAudioListenHistory(int audioId) async {
+    String? token = await StorageUtils.getToken();
+    final response = await client.get(
+      Uri.parse('$baseUrl/AudioListenHistory?audioId=$audioId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body) as List;
+      return data.map((item) => ListenModel.fromJson(item)).toList();
+    } else {
+      throw Exception('Failed to load audio listen history');
     }
   }
 }
