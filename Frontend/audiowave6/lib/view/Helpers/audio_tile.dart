@@ -75,7 +75,7 @@ class AudioTile extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Icon(Icons.hearing, size: 16, color: Colors.grey),
+                      Icon(Icons.visibility, size: 16, color: Colors.grey),
                       const SizedBox(width: 4),
                       Text(
                         '${audio.listens ?? 0} waves',

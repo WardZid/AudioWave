@@ -164,7 +164,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
                                     size: 16, color: Colors.grey),
                                 const SizedBox(width: 4),
                                 Text(
-                                  '${widget.audio.listens ?? 0} views',
+                                  '${widget.audio.listens ?? 0} waves',
                                   style: const TextStyle(
                                     fontSize: 14,
                                     color: Colors.grey,
