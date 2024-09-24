@@ -39,27 +39,22 @@
 ## Roadmap
 
 - [ ] Frontend
-    - [ ] Web-App
+    - [ ] Mobile App
         - [ ] Main Page
-            - [ ] Audio Grid
-                - [ ] Show By Latest Uploads
-                - [ ] Load On Scroll
+            - [x] Audio Grid
             - [ ] Search Mechanism
-            - [ ] Audio Player Sidebar
-              - [ ] Working Audio Player
-              - [ ] Comments Component
-        - [ ] Sign In Page
-        - [ ] Register Page 
-        - [ ] User Profile Page
-            - [ ] Upload Media
-            - [ ] View and Edit Uploaded Media 
+            - [x] Audio Player Sidebar
+              - [x] Working Audio Player
+        - [x] Sign In Page
+        - [x] Register Page 
+        - [x] User Profile Page
+            - [x] Upload Media
 - [ ] Backend
-    - [ ] API Gateway Microservice
+    - [x] API Gateway Microservice
     - [x] Users MicroService
     - [x] Audio Streaming Microservice
     - [x] Audio Upload MicroService
-    - [ ] Playlists Microservice
-    - [ ] Comments Microservice
+    - [x] Playlists Microservice
     - [ ] Recommendation MicroService (optional)
 
 See the [open issues](https://github.com/WardZid/AudioWave/issues) for a full list of proposed features (and known issues).
