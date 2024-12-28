@@ -62,6 +62,7 @@ See the [open issues](https://github.com/WardZid/AudioWave/issues) for a full li
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
+![architecture_phase-2 drawio](https://github.com/user-attachments/assets/f239e591-c8eb-4a1f-83c7-d56855ef194c)
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
